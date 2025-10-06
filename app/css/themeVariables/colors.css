@@ -1,0 +1,5 @@
+@theme inline static {
+    --color-mt-bg: var(--color-neutral-50);
+
+    --color-mt-txt: var(--color-neutral-950);
+}
