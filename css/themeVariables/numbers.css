@@ -1,0 +1,21 @@
+@theme inline static {
+    /* breakpoint css variables must go with breakpoint theme variables for readability*/
+    --breakpoint-600: 600px;
+    --breakpoint-780: 780px;
+    --breakpoint-960: 960px;
+
+    --spacing-crack: var(--spacing-4);
+    --spacing-page: var(--spacing-16);
+
+    --spacing-btn: var(--spacing-16);
+    --spacing-btn-sbm: var(--spacing-80);
+
+    --spacing-inp-x: var(--spacing-8);
+    --spacing-inp: var(--spacing-40);
+
+    --spacing-quarter: 25%;
+
+    --radius-btn: 9999px;
+
+    --radius-inp: 0.2rem;
+}
