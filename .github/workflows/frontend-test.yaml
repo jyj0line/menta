@@ -20,17 +20,17 @@ jobs:
   # ─────────────────────────────────────────────────────
   # Job 1: ESLint Test
   # ─────────────────────────────────────────────────────
-  lint:
+  eslint-test:
     name: ESLint Test
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       - name: Setup and Cache Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -40,23 +40,23 @@ jobs:
 
       # ── ESLint Test ──────────────────────────────────────
       - name: ESLint Test
-      - run: npx eslint
+        run: npx eslint
 
   # ─────────────────────────────────────────────────────
-  # Job 2: Unit & Integration Tests (Vitest + RTL)
+  # Job 2: Unit & Integration Test (Vitest + RTL)
   # ─────────────────────────────────────────────────────
-  unit-integration-tests:
-    name: Unit & Integration Tests (Vitest + RTL)
-    needs: ESLint Test
+  unit-integration-test:
+    name: Unit & Integration Test (Vitest + RTL)
+    needs: eslint-test
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       - name: Setup and Cache Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -65,16 +65,11 @@ jobs:
         run: npm ci
 
       # ── Setup Supabase Local DB ──────────────────────────────────────
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Start DB
-        run: supabase db start
+        run: npx supabase db start
 
       - name: Reset DB (apply migrations + seed)
-        run: supabase db reset
+        run: npx supabase db reset
 
       # ── Unit & Integration Test (Vitest + RTL) ──────────────────────────────────────
       - name: Run Vitest
@@ -82,28 +77,28 @@ jobs:
 
       - name: Upload coverage report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4
         with:
           name: vitest-report
           path: vitest-report/
           retention-days: 30
 
   # ─────────────────────────────────────────────────────
-  # Job 3: E2E Tests
+  # Job 3: E2E Test
   # ─────────────────────────────────────────────────────
   e2e-tests:
-    name: E2E Tests (Playwright)
-    needs: unit-integration-tests
+    name: E2E Test (Playwright)
+    needs: unit-integration-test
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       - name: Setup and Cache Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -112,20 +107,15 @@ jobs:
         run: npm ci
 
       # ── Setup Supabase Local Stack ──────────────────────────────────────
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Start Supabase
-        run: supabase start
+        run: npx supabase start
 
       - name: Reset DB (apply migrations + seed)
-        run: supabase db reset
+        run: npx supabase db reset
 
       # ── Setup Next.js ──────────────────────────────────────
       - name: Cache Next.js build
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 #v5
         with:
           path: |
             ~/.npm
@@ -152,7 +142,7 @@ jobs:
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4
         with:
           name: playwright-report
           path: playwright-report/

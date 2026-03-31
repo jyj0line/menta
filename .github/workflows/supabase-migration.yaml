@@ -21,15 +21,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       - name: Link Supabase remote project
-        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+        run: npx supabase link --project-ref $SUPABASE_PROJECT_ID
 
       - name: DB migration
-        run: supabase db push
+        run: npx supabase db push

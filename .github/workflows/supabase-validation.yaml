@@ -23,26 +23,21 @@ jobs:
     steps:
       # ── Setup CI environment ───────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       # ── Local DB Validation ─────────────────────────────────
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Start local DB
-        run: supabase db start
+        run: npx supabase db start
 
       - name: Lint DB
-        run: supabase db lint
+        run: npx supabase db lint
 
       - name: Test DB
-        run: supabase test db
+        run: npx supabase test db
 
       - name: Verify generated types are checked in
         run: |
-          supabase gen types typescript --local > types.gen.ts
+          npx supabase gen types typescript --local > types.gen.ts
           if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
@@ -64,16 +59,11 @@ jobs:
     steps:
       # ── Setup CI environment ───────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       # ── Remote DB Migration Dry-run ───────────────────────────
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Link Supabase remote project
-        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+        run: npx supabase link --project-ref $SUPABASE_PROJECT_ID
 
       - name: Dry-run DB migration
-        run: supabase db push --dry-run
+        run: npx supabase db push --dry-run
