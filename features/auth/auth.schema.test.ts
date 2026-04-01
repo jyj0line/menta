@@ -14,10 +14,7 @@ import {
     PASSWORD_ERROR_CODES,
     PASSWORD_CONFIRMAITON_ERROR_CODES
 } from '@/features/auth/results/auth.validationER.result';
-import {
-    FIELDS.EMAIL,
-    FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION
-} from '@/features/auth/constants/auth.field';
+import { FIELDS } from '@/features/auth/constants/auth.field';
 
 describe('@/feature/auth/auth.schema.test.ts', () => {
     describe('common schemas', () => {

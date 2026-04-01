@@ -1,7 +1,7 @@
 import { isAuthApiError } from '@supabase/supabase-js';
 
 import { LOGIN_ERROR_CODES, type LoginER, loginER } from '@/features/auth/results/auth.loginER.result';
-import { FIELDS.EMAIL } from '@/features/auth/constants/auth.field';
+import { FIELDS } from '@/features/auth/constants/auth.field';
 
 import { createSupabaseServerClient as importedCreateSupabaseServerClient} from '@/libs/supabase/server';
 import { SUPABASE_ERROR_CODES } from '@/libs/supabase/results/supabase.result';

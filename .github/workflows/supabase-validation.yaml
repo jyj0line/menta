@@ -12,6 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  deploy:
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    environment: ${{ github.ref_name == 'main' && 'menta-main-environment' || 'menta-develop-environment' }}
+
   # ─────────────────────────────────────────────────────
   # Job 1: Local DB Validation (lint, test, type-check)
   # ─────────────────────────────────────────────────────
@@ -39,7 +43,7 @@ jobs:
         run: npm run supabase:dbstart
 
       - name: Lint DB
-        run: npm run supabase:dblint
+        run: npm run supabase:lint
 
       - name: Test DB
         run: npm run supabase:test:db

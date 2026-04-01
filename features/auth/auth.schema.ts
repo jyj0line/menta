@@ -1,9 +1,6 @@
 import * as z from 'zod';
 
-import {
-  FIELDS.EMAIL,
-  FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION
-} from '@/features/auth/constants/auth.field';
+import { FIELDS } from '@/features/auth/constants/auth.field';
 import {
   EMAIL_ERROR_CODES,
   PASSWORD_ERROR_CODES,

@@ -12,6 +12,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  deploy:
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    environment: ${{ github.ref_name == 'main' && 'menta-main-environment' || 'menta-develop-environment' }}
+
   supabase_migration:
     runs-on: ubuntu-latest
     env:

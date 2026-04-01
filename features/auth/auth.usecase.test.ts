@@ -4,7 +4,7 @@ import { createMockFormData } from '@/tests/utils/mock';
 
 import { signupUsecase, loginUsecase } from '@/features/auth/auth.usecase';
 import { type AuthService } from '@/features/auth/auth.service';
-import { FIELDS.EMAIL, FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION } from '@/features/auth/constants/auth.field';
+import { FIELDS } from '@/features/auth/constants/auth.field';
 import { LOGIN_ERROR_CODES, loginER } from '@/features/auth/results/auth.loginER.result';
 import { EMAIL_ERROR_CODES, PASSWORD_ERROR_CODES, PASSWORD_CONFIRMAITON_ERROR_CODES } from '@/features/auth/results/auth.validationER.result';
 import { validationER } from '@/results/errorR/validationER.result';

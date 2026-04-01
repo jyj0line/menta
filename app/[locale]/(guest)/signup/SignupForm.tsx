@@ -5,10 +5,7 @@ import * as z from 'zod';
 import { useTranslations } from 'next-intl';
 
 import { signupAction } from '@/features/auth/auth.action';
-import {
-    FIELDS.EMAIL,
-    FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION
-} from '@/features/auth/constants/auth.field';
+import { FIELDS } from '@/features/auth/constants/auth.field';
 import { type SignupFormData, signupFormDataSchema } from '@/features/auth/auth.schema';;
 import { LENGTHS } from '@/features/auth/constants/auth.length';
 import {
