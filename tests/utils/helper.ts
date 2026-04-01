@@ -6,8 +6,6 @@ export function assertNotNull<T>(value: T | null, message: string): asserts valu
 }
 // -assert
 
-
-
 // route-
 export const createSpedUrl = (url: string, sps: Record<SpKey, string>): string => {
   const newUrl = new URL(url);

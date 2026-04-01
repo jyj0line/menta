@@ -35,7 +35,7 @@ jobs:
 
       # ── Remote DB Migration ───────────────────────────
       - name: Link Supabase remote project
-        run: npx supabase link --project-ref $SUPABASE_PROJECT_ID
+        run: npm run supabase:link
 
       - name: DB migration
-        run: npx supabase db push
+        run: npm run supabase:push

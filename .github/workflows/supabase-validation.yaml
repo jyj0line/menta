@@ -36,18 +36,18 @@ jobs:
 
       # ── Local DB Validation ─────────────────────────────────
       - name: Start local DB
-        run: npx supabase db start
+        run: npm run supabase:dbstart
 
       - name: Lint DB
-        run: npx supabase db lint
+        run: npm run supabase:dblint
 
       - name: Test DB
-        run: npx supabase test db
+        run: npm run supabase:test:db
 
       - name: Verify generated types are checked in
         run: |
-          npx supabase gen types typescript --local > types.gen.ts
-          if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+          npm run supabase:type
+          if ! git diff --ignore-space-at-eol --exit-code --quiet supabase/type.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
             exit 1
@@ -81,7 +81,7 @@ jobs:
 
       # ── Remote DB Migration Dry-run ───────────────────────────
       - name: Link Supabase remote project
-        run: npx supabase link --project-ref $SUPABASE_PROJECT_ID
+        run: npm run supabase:link
 
       - name: Dry-run DB migration
-        run: npx supabase db push --dry-run
+        run: npm run supabase:push--dr

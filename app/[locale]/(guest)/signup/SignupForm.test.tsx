@@ -2,16 +2,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { renderWithNextintl } from '@/tests/vitest/utils/helper';
+import { renderWithNextintl } from '@/tests/rtl/utils/helper';
 import { createMockFormData } from '@/tests/utils/mock';
 
 import { SignUpForm } from '@/app/[locale]/(guest)/signup/SignupForm';
 import { signupAction } from '@/features/auth/auth.action';
-import {
-  EMAIL_FIELD,
-  PASSWORD_FIELD, PASSWORD_CONFIRMATION_FIELD
-} from '@/features/auth/constants/auth.field';
-import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH} from '@/features/auth/constants/auth.length';
+import { FIELDS } from '@/features/auth/constants/auth.field';
+import { LENGTHS } from '@/features/auth/constants/auth.length';
 import messages from '@/i18n/messages/en.json';
 import { PASSWORD_ERROR_CODES } from '@/features/auth/results/auth.validationER.result';
 import { successR } from '@/results/successR/successR.result';
@@ -32,17 +29,17 @@ describe('SignUpForm', () => {
   const rawPwMessages = messages.auth.result.fieldErrorCodeMessages.password;
   const pwMessages = {
     ...rawPwMessages,
-    too_short: rawPwMessages.too_short.replace('{min}', PASSWORD_MIN_LENGTH.toString()),
-    too_long: rawPwMessages.too_long.replace('{max}', PASSWORD_MAX_LENGTH.toString()),
+    too_short: rawPwMessages.too_short.replace('{min}', LENGTHS.PASSWORD_MIN.toString()),
+    too_long: rawPwMessages.too_long.replace('{max}', LENGTHS.PASSWORD_MAX.toString()),
   };
   const pwcMessages = messages.auth.result.fieldErrorCodeMessages.password_confirmation;
 
   const emailLabelText = new RegExp(`^${formMessages.emailLabel}$`);
-  const emailMsgContainerId = `${EMAIL_FIELD} message`;
+  const emailMsgContainerId = `${FIELDS.EMAIL} message`;
   const passwordLabelText = new RegExp(`^${formMessages.passwordLabel}$`);
-  const passwordMsgContainerId = `${PASSWORD_FIELD} message`;
+  const passwordMsgContainerId = `${FIELDS.PASSWORD} message`;
   const passwordConfirmationLabelText = new RegExp(`^${formMessages.passwordConfirmationLabel}$`);
-  const passwordConfirmationMsgContainerId = `${PASSWORD_CONFIRMATION_FIELD} message`;
+  const passwordConfirmationMsgContainerId = `${FIELDS.PASSWORD_CONFIRMATION} message`;
   const submitButtonText = new RegExp(`^${formMessages.signupButtonLabel}$`);
 
   const msgPrefix = '- ';
@@ -59,7 +56,7 @@ describe('SignUpForm', () => {
         // email field exists and is correctly linked to its message container
         const input = screen.getByLabelText(emailLabelText);
         expect(input).toBeInTheDocument();
-        expect(input).toHaveAttribute('id', EMAIL_FIELD);
+        expect(input).toHaveAttribute('id', FIELDS.EMAIL);
         expect(input).toHaveAttribute('aria-describedby', emailMsgContainerId);
 
         // message container exists and is connected via aria-describedby
@@ -153,7 +150,7 @@ describe('SignUpForm', () => {
         // password field exists and is correctly linked to its message container
         const input = screen.getByLabelText(passwordLabelText);
         expect(input).toBeInTheDocument();
-        expect(input).toHaveAttribute('id', PASSWORD_FIELD);
+        expect(input).toHaveAttribute('id', FIELDS.PASSWORD);
         expect(input).toHaveAttribute('aria-describedby', passwordMsgContainerId);
         expect(input).toHaveAttribute('type', 'password');
 
@@ -184,16 +181,16 @@ describe('SignUpForm', () => {
         expect(input).toHaveValue('Password123!');
       });
 
-      it(`limits user input to maxLength ${PASSWORD_MAX_LENGTH}.`, async () => {
+      it(`limits user input to maxLength ${LENGTHS.PASSWORD_MAX}.`, async () => {
         const user = userEvent.setup();
         renderWithNextintl(<SignUpForm next={nextSrpr} />, {});
 
         const input = screen.getByLabelText(passwordLabelText);
 
-        const longValue = 'P'.repeat(PASSWORD_MAX_LENGTH + 1);
+        const longValue = 'P'.repeat(LENGTHS.PASSWORD_MAX + 1);
         await user.type(input, longValue);
 
-        expect(input).toHaveValue(longValue.slice(0, PASSWORD_MAX_LENGTH));
+        expect(input).toHaveValue(longValue.slice(0, LENGTHS.PASSWORD_MAX));
       });
     });
 
@@ -221,7 +218,7 @@ describe('SignUpForm', () => {
       });
 
       describe('invalid password: ', () => {
-        it(`turns into error message when password length is shorter than ${PASSWORD_MIN_LENGTH}.`, async () => {
+        it(`turns into error message when password length is shorter than ${LENGTHS.PASSWORD_MIN}.`, async () => {
           const user = userEvent.setup();
           renderWithNextintl(<SignUpForm next={nextSrpr} />, {});
 
@@ -246,14 +243,14 @@ describe('SignUpForm', () => {
           });
         });
 
-        it(`turns into error message when password length is longer than ${PASSWORD_MAX_LENGTH}.`, async () => {
+        it(`turns into error message when password length is longer than ${LENGTHS.PASSWORD_MAX}.`, async () => {
           const user = userEvent.setup();
           renderWithNextintl(<SignUpForm next={nextSrpr} />, {});
 
           const input = screen.getByLabelText(passwordLabelText);
           const messageContainer = document.getElementById(passwordMsgContainerId) as unknown as HTMLElement;
 
-          await user.type(input, 'P'.repeat(PASSWORD_MAX_LENGTH + 1));
+          await user.type(input, 'P'.repeat(LENGTHS.PASSWORD_MAX + 1));
           await user.tab();
 
           Object.entries(pwMessages).forEach(([code, msg]) => {
@@ -311,7 +308,7 @@ describe('SignUpForm', () => {
         // password confirmation field exists and is correctly linked to its message container
         const input = screen.getByLabelText(passwordConfirmationLabelText);
         expect(input).toBeInTheDocument();
-        expect(input).toHaveAttribute('id', PASSWORD_CONFIRMATION_FIELD);
+        expect(input).toHaveAttribute('id', FIELDS.PASSWORD_CONFIRMATION);
         expect(input).toHaveAttribute('aria-describedby', passwordConfirmationMsgContainerId);
         expect(input).toHaveAttribute('type', 'password');
 
@@ -342,16 +339,16 @@ describe('SignUpForm', () => {
         expect(input).toHaveValue('Password123!');
       });
 
-      it(`limits user input to maxLength ${PASSWORD_MAX_LENGTH}.`, async () => {
+      it(`limits user input to maxLength ${LENGTHS.PASSWORD_MAX}.`, async () => {
         const user = userEvent.setup();
         renderWithNextintl(<SignUpForm next={nextSrpr} />, {});
 
         const input = screen.getByLabelText(passwordConfirmationLabelText);
 
-        const longValue = 'P'.repeat(PASSWORD_MAX_LENGTH + 1);
+        const longValue = 'P'.repeat(LENGTHS.PASSWORD_MAX + 1);
         await user.type(input, longValue);
 
-        expect(input).toHaveValue(longValue.slice(0, PASSWORD_MAX_LENGTH));
+        expect(input).toHaveValue(longValue.slice(0, LENGTHS.PASSWORD_MAX));
       });
     });
 
@@ -539,9 +536,9 @@ describe('SignUpForm', () => {
             nextSrpr,
             undefined,
             createMockFormData({
-              [EMAIL_FIELD]: mockEmail,
-              [PASSWORD_FIELD]: mockPassword,
-              [PASSWORD_CONFIRMATION_FIELD]: mockPasswordConfirmation,
+              [FIELDS.EMAIL]: mockEmail,
+              [FIELDS.PASSWORD]: mockPassword,
+              [FIELDS.PASSWORD_CONFIRMATION]: mockPasswordConfirmation,
             })
           );
 

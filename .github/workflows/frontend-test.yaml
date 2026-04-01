@@ -18,10 +18,10 @@ env:
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: ESLint Test
+  # Job 1: ESLint & i18n-check Test
   # ─────────────────────────────────────────────────────
-  eslint-test:
-    name: ESLint Test
+  eslint-i18ncheck-test:
+    name: ESLint & i18n-check Test
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -40,14 +40,18 @@ jobs:
 
       # ── ESLint Test ──────────────────────────────────────
       - name: ESLint Test
-        run: npx eslint
+        run: npm run eslint
+
+      # ── i18n-check Test ──────────────────────────────────────
+      - name: i18n-check Test
+        run: npm run i18ncheck
 
   # ─────────────────────────────────────────────────────
   # Job 2: Unit & Integration Test (Vitest + RTL)
   # ─────────────────────────────────────────────────────
   unit-integration-test:
     name: Unit & Integration Test (Vitest + RTL)
-    needs: eslint-test
+    needs: eslint-i18ncheck-test
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -66,14 +70,14 @@ jobs:
 
       # ── Setup Supabase Local DB ──────────────────────────────────────
       - name: Start DB
-        run: npx supabase db start
+        run: npm run supabase:dbstart
 
       - name: Reset DB (apply migrations + seed)
-        run: npx supabase db reset
+        run: npm run supabase:reset
 
       # ── Unit & Integration Test (Vitest + RTL) ──────────────────────────────────────
       - name: Run Vitest
-        run: npx vitest run --coverage
+        run: npm run vitest--cvr
 
       - name: Upload coverage report
         if: ${{ !cancelled() }}
@@ -108,10 +112,10 @@ jobs:
 
       # ── Setup Supabase Local Stack ──────────────────────────────────────
       - name: Start Supabase
-        run: npx supabase start
+        run: npm run supabase:start
 
       - name: Reset DB (apply migrations + seed)
-        run: npx supabase db reset
+        run: npm run supabase:reset
 
       # ── Setup Next.js ──────────────────────────────────────
       - name: Cache Next.js build
@@ -125,20 +129,20 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Build Next.js
-        run: npx next build --turbopack
+        run: npm run build--tp
 
       - name: Start Next.js
-        run: npx next start &
+        run: npm run start &
 
       - name: Wait for Next.js
-        run: npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN $NEXT_PUBLIC_SUPABASE_API_PROJECT_URL
+        run: npm run playwright:wait
 
       # ── E2E Tests (Playwright) ──────────────────────────────────────
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npm run playwright:deps
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npm run playwright
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}

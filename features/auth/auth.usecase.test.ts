@@ -4,7 +4,7 @@ import { createMockFormData } from '@/tests/utils/mock';
 
 import { signupUsecase, loginUsecase } from '@/features/auth/auth.usecase';
 import { type AuthService } from '@/features/auth/auth.service';
-import { EMAIL_FIELD, PASSWORD_FIELD, PASSWORD_CONFIRMATION_FIELD } from '@/features/auth/constants/auth.field';
+import { FIELDS.EMAIL, FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION } from '@/features/auth/constants/auth.field';
 import { LOGIN_ERROR_CODES, loginER } from '@/features/auth/results/auth.loginER.result';
 import { EMAIL_ERROR_CODES, PASSWORD_ERROR_CODES, PASSWORD_CONFIRMAITON_ERROR_CODES } from '@/features/auth/results/auth.validationER.result';
 import { validationER } from '@/results/errorR/validationER.result';
@@ -32,11 +32,11 @@ describe('@/features/auth/auth.usecase.ts', () => {
     describe('returns SuccessR with the email(inputted) property and revalidate path when validation and singup service succeeds: ', () => {
       it('returns SuccessR with the email(inputted) property and revalidate path when validation and singup service succeeds.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: validPassword,
-          [PASSWORD_CONFIRMATION_FIELD]: validPasswordConfirmation
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: validPassword,
+          [FIELDS.PASSWORD_CONFIRMATION]: validPasswordConfirmation
         });
-        const expectedResult = successR({ [EMAIL_FIELD]: validEmail });
+        const expectedResult = successR({ [FIELDS.EMAIL]: validEmail });
         vi.mocked(mockAuthService.signup).mockResolvedValue(expectedResult);
 
         const result = await signupUsecase(formData, PROTECTED_ROUTES.MY, mockAuthService, mockCacheService);
@@ -50,12 +50,12 @@ describe('@/features/auth/auth.usecase.ts', () => {
     describe('returns validationER with email, password, and password confirmation fields when validation fails: ', () => {
       it('returns ValidationER when email field is invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: 'invalid-email',
-          [PASSWORD_FIELD]: validPassword,
-          [PASSWORD_CONFIRMATION_FIELD]: validPasswordConfirmation
+          [FIELDS.EMAIL]: 'invalid-email',
+          [FIELDS.PASSWORD]: validPassword,
+          [FIELDS.PASSWORD_CONFIRMATION]: validPasswordConfirmation
         });
         const expectedResult = validationER({
-          [EMAIL_FIELD]: [EMAIL_ERROR_CODES.INVALID_FORMAT],
+          [FIELDS.EMAIL]: [EMAIL_ERROR_CODES.INVALID_FORMAT],
         });
 
         const result = await signupUsecase(formData, PROTECTED_ROUTES.MY, mockAuthService, mockCacheService);
@@ -67,18 +67,18 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns ValidationER when password field is invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: 'weak',
-          [PASSWORD_CONFIRMATION_FIELD]: validPasswordConfirmation
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: 'weak',
+          [FIELDS.PASSWORD_CONFIRMATION]: validPasswordConfirmation
         });
         const expectedResult = validationER({
-          [PASSWORD_FIELD]: [
+          [FIELDS.PASSWORD]: [
             PASSWORD_ERROR_CODES.TOO_SHORT,
             PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
             PASSWORD_ERROR_CODES.MISSING_NUMBER,
             PASSWORD_ERROR_CODES.MISSING_SPECIAL_CHAR
           ],
-          [PASSWORD_CONFIRMATION_FIELD]: [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]
+          [FIELDS.PASSWORD_CONFIRMATION]: [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]
         });
 
         const result = await signupUsecase(formData, PROTECTED_ROUTES.MY, mockAuthService, mockCacheService);
@@ -90,12 +90,12 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns ValidationER when password confirmation field is invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: validPassword,
-          [PASSWORD_CONFIRMATION_FIELD]: 'weak'
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: validPassword,
+          [FIELDS.PASSWORD_CONFIRMATION]: 'weak'
         });
         const expectedResult = validationER({
-          [PASSWORD_CONFIRMATION_FIELD]: [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]
+          [FIELDS.PASSWORD_CONFIRMATION]: [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]
         });
 
         const result = await signupUsecase(formData, PROTECTED_ROUTES.MY, mockAuthService, mockCacheService);
@@ -107,12 +107,12 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns ValidationER when password and password confirmation fields do not match.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: validPassword,
-          [PASSWORD_CONFIRMATION_FIELD]: 'Password2!'
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: validPassword,
+          [FIELDS.PASSWORD_CONFIRMATION]: 'Password2!'
         });
         const expectedResult = validationER({
-          [PASSWORD_CONFIRMATION_FIELD]: [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]
+          [FIELDS.PASSWORD_CONFIRMATION]: [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]
         });
 
         const result = await signupUsecase(formData, PROTECTED_ROUTES.MY, mockAuthService, mockCacheService);
@@ -124,13 +124,13 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns ValidationER when all(email, password and password confirmation) fields are invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: '',
-          [PASSWORD_FIELD]: '',
-          [PASSWORD_CONFIRMATION_FIELD]: ''
+          [FIELDS.EMAIL]: '',
+          [FIELDS.PASSWORD]: '',
+          [FIELDS.PASSWORD_CONFIRMATION]: ''
         });
         const expectedResult = validationER({
-          [EMAIL_FIELD]: [EMAIL_ERROR_CODES.INVALID_FORMAT],
-          [PASSWORD_FIELD]:[
+          [FIELDS.EMAIL]: [EMAIL_ERROR_CODES.INVALID_FORMAT],
+          [FIELDS.PASSWORD]:[
             PASSWORD_ERROR_CODES.TOO_SHORT,
             PASSWORD_ERROR_CODES.MISSING_LOWERCASE,
             PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
@@ -151,9 +151,9 @@ describe('@/features/auth/auth.usecase.ts', () => {
       it('returns unexpectedER when the auth service fails unexpectedly.', async () => {
         // given: valid form data
           const formData = createMockFormData({
-              [EMAIL_FIELD]: validEmail,
-              [PASSWORD_FIELD]: validPassword,
-              [PASSWORD_CONFIRMATION_FIELD]: validPassword,
+              [FIELDS.EMAIL]: validEmail,
+              [FIELDS.PASSWORD]: validPassword,
+              [FIELDS.PASSWORD_CONFIRMATION]: validPassword,
           });
           const expectedResult = unexpectedER();
           vi.mocked(mockAuthService.signup).mockResolvedValue(expectedResult);
@@ -171,8 +171,8 @@ describe('@/features/auth/auth.usecase.ts', () => {
     describe('returns SuccessR with true and revalidate path when validation and login service succeeds: ', () => {
       it('returns SuccessR with true and revalidate path when validation and login service succeeds.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: validPassword
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: validPassword
         });
         const expectedResult = successR(true as const);
         vi.mocked(mockAuthService.login).mockResolvedValue(expectedResult);
@@ -190,8 +190,8 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns loginER when email field is invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: 'invalid-email',
-          [PASSWORD_FIELD]: validPassword
+          [FIELDS.EMAIL]: 'invalid-email',
+          [FIELDS.PASSWORD]: validPassword
         });
 
         const result = await loginUsecase(formData, mockAuthService, mockCacheService);
@@ -203,8 +203,8 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns loginER when password field is invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: 'weak'
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: 'weak'
         });
 
         const result = await loginUsecase(formData, mockAuthService, mockCacheService);
@@ -216,8 +216,8 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns loginER when all(email, password) fields are invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: '',
-          [PASSWORD_FIELD]: ''
+          [FIELDS.EMAIL]: '',
+          [FIELDS.PASSWORD]: ''
         });
 
         const result = await loginUsecase(formData, mockAuthService, mockCacheService);
@@ -231,8 +231,8 @@ describe('@/features/auth/auth.usecase.ts', () => {
     describe('returns loginER with auth error code(invalid credentials) or UnexpectedER when auth service fails: ', () => {
       it('returns loginER when the credentials invalid.', async () => {
         const formData = createMockFormData({
-          [EMAIL_FIELD]: validEmail,
-          [PASSWORD_FIELD]: validPassword,
+          [FIELDS.EMAIL]: validEmail,
+          [FIELDS.PASSWORD]: validPassword,
         });
         const expectedResult = loginER(LOGIN_ERROR_CODES.INVALID_CREDENTIALS);
         vi.mocked(mockAuthService.login).mockResolvedValue(expectedResult);
@@ -246,8 +246,8 @@ describe('@/features/auth/auth.usecase.ts', () => {
 
       it('returns unexpectedER when the auth service fails unexpectedly.', async () => {
           const formData = createMockFormData({
-              [EMAIL_FIELD]: validEmail,
-              [PASSWORD_FIELD]: validPassword
+              [FIELDS.EMAIL]: validEmail,
+              [FIELDS.PASSWORD]: validPassword
           });
           const expectedResult = unexpectedER();
           vi.mocked(mockAuthService.login).mockResolvedValue(expectedResult);

@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 
 import { signupAction } from '@/features/auth/auth.action';
 import {
-    EMAIL_FIELD,
-    PASSWORD_FIELD, PASSWORD_CONFIRMATION_FIELD
+    FIELDS.EMAIL,
+    FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION
 } from '@/features/auth/constants/auth.field';
 import { type SignupFormData, signupFormDataSchema } from '@/features/auth/auth.schema';;
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@/features/auth/constants/auth.length';
+import { LENGTHS } from '@/features/auth/constants/auth.length';
 import {
     type EmailErrorCode, EMAIL_ERROR_CODES,
     type PasswordErrorCode, PASSWORD_ERROR_CODES,
@@ -83,9 +83,9 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
     
     // field values
     const [formData, setFormData] = useState<SignupFormData>({
-        [EMAIL_FIELD]: '',
-        [PASSWORD_FIELD]: '',
-        [PASSWORD_CONFIRMATION_FIELD]: ''
+        [FIELDS.EMAIL]: '',
+        [FIELDS.PASSWORD]: '',
+        [FIELDS.PASSWORD_CONFIRMATION]: ''
     });
 
     // field error codes(validationER)
@@ -122,8 +122,8 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                 [field]: newFieldErrorCodes[field]
             };
 
-            if (field === PASSWORD_FIELD && formData[PASSWORD_CONFIRMATION_FIELD]) {
-                next[PASSWORD_CONFIRMATION_FIELD] = newFieldErrorCodes[PASSWORD_CONFIRMATION_FIELD];
+            if (field === FIELDS.PASSWORD && formData[FIELDS.PASSWORD_CONFIRMATION]) {
+                next[FIELDS.PASSWORD_CONFIRMATION] = newFieldErrorCodes[FIELDS.PASSWORD_CONFIRMATION];
             }
 
             return next;
@@ -132,11 +132,11 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
 
 
 
-    const hasEmailError = (fieldErrorCodes[EMAIL_FIELD]?.length ?? 0) > 0;
-    const hasPasswordError = (fieldErrorCodes[PASSWORD_FIELD]?.length ?? 0) > 0;
-    const hasPasswordConfirmationError = (fieldErrorCodes[PASSWORD_CONFIRMATION_FIELD]?.length ?? 0) > 0;
+    const hasEmailError = (fieldErrorCodes[FIELDS.EMAIL]?.length ?? 0) > 0;
+    const hasPasswordError = (fieldErrorCodes[FIELDS.PASSWORD]?.length ?? 0) > 0;
+    const hasPasswordConfirmationError = (fieldErrorCodes[FIELDS.PASSWORD_CONFIRMATION]?.length ?? 0) > 0;
 
-    const isAllFieldsFilled = formData[EMAIL_FIELD] && formData[PASSWORD_FIELD] && formData[PASSWORD_CONFIRMATION_FIELD];
+    const isAllFieldsFilled = formData[FIELDS.EMAIL] && formData[FIELDS.PASSWORD] && formData[FIELDS.PASSWORD_CONFIRMATION];
     const canSubmit = isAllFieldsFilled
         && !hasEmailError && !hasPasswordError && !hasPasswordConfirmationError
         && !isPending;
@@ -154,8 +154,8 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
 
     const pwT = useTranslations('auth.result.fieldErrorCodeMessages.password')
     const pwTs: Record<PasswordErrorCode, string> = {
-        [PASSWORD_ERROR_CODES.TOO_SHORT]: pwT(PASSWORD_ERROR_CODES.TOO_SHORT, { min: PASSWORD_MIN_LENGTH.toString() }),
-        [PASSWORD_ERROR_CODES.TOO_LONG]: pwT(PASSWORD_ERROR_CODES.TOO_LONG, { max: PASSWORD_MAX_LENGTH.toString() }),
+        [PASSWORD_ERROR_CODES.TOO_SHORT]: pwT(PASSWORD_ERROR_CODES.TOO_SHORT, { min: LENGTHS.PASSWORD_MIN.toString() }),
+        [PASSWORD_ERROR_CODES.TOO_LONG]: pwT(PASSWORD_ERROR_CODES.TOO_LONG, { max: LENGTHS.PASSWORD_MAX.toString() }),
         [PASSWORD_ERROR_CODES.MISSING_LOWERCASE]: pwT(PASSWORD_ERROR_CODES.MISSING_LOWERCASE),
         [PASSWORD_ERROR_CODES.MISSING_UPPERCASE]: pwT(PASSWORD_ERROR_CODES.MISSING_UPPERCASE),
         [PASSWORD_ERROR_CODES.MISSING_NUMBER]: pwT(PASSWORD_ERROR_CODES.MISSING_NUMBER),
@@ -172,7 +172,7 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
             <Candy
                 title={successT('candy.title')}
                 warning={successT('candy.warning')}
-                details={successT('candy.details', { email: formData[EMAIL_FIELD] })}
+                details={successT('candy.details', { email: formData[FIELDS.EMAIL] })}
                 className={`border-ln-sub ${className}`}
             />
         );
@@ -182,7 +182,7 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
         <form action={formAction} className={`flex flex-col ${className}`}>
             {/* email field */}
             <div className='flex flex-col'>
-                <label htmlFor={EMAIL_FIELD}>
+                <label htmlFor={FIELDS.EMAIL}>
                     {formT('emailLabel')}
                 </label>
 
@@ -190,28 +190,28 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                     ${hasEmailError ? INPUT_CONTAINER_ERROR_CN : INPUT_CONTAINER_DEFAULT_CN}`}
                 >
                     <Input
-                        idName={EMAIL_FIELD}
-                        ariaDescribedby={`${EMAIL_FIELD}${FILED_ERROR_CODE_POSTFIX}`}
+                        idName={FIELDS.EMAIL}
+                        ariaDescribedby={`${FIELDS.EMAIL}${FILED_ERROR_CODE_POSTFIX}`}
                         type="email"
                         placeholder={formT('emailPlaceholder')}
                         maxLength={INPUT.MAX}
-                        value={formData[EMAIL_FIELD]}
+                        value={formData[FIELDS.EMAIL]}
                         onChange={handleFieldChange}
-                        onBlur={() => handleFieldBlur(EMAIL_FIELD)}
+                        onBlur={() => handleFieldBlur(FIELDS.EMAIL)}
                         className={INPUT_CN}
                     />
                 </div>
 
                 <FieldErrorCodesP
-                    idPrefix={EMAIL_FIELD}
+                    idPrefix={FIELDS.EMAIL}
                     errorMessages={emailTs}
-                    errorCodes={fieldErrorCodes[EMAIL_FIELD]}
+                    errorCodes={fieldErrorCodes[FIELDS.EMAIL]}
                 />
             </div>
             
             {/* password field */}
             <div className='flex flex-col mt-(--spacing-48)'>
-                <label htmlFor={PASSWORD_FIELD}>
+                <label htmlFor={FIELDS.PASSWORD}>
                     {formT('passwordLabel')}
                 </label>
 
@@ -219,14 +219,14 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                     ${hasPasswordError ? INPUT_CONTAINER_ERROR_CN : INPUT_CONTAINER_DEFAULT_CN}`}
                 >
                     <Input
-                        idName={PASSWORD_FIELD}
-                        ariaDescribedby={`${PASSWORD_FIELD}${FILED_ERROR_CODE_POSTFIX}`}
+                        idName={FIELDS.PASSWORD}
+                        ariaDescribedby={`${FIELDS.PASSWORD}${FILED_ERROR_CODE_POSTFIX}`}
                         type={isPasswordShown ? "text" : "password"}
                         placeholder={formT('passwordPlaceholder')}
-                        maxLength={PASSWORD_MAX_LENGTH}
-                        value={formData[PASSWORD_FIELD]}
+                        maxLength={LENGTHS.PASSWORD_MAX}
+                        value={formData[FIELDS.PASSWORD]}
                         onChange={handleFieldChange}
-                        onBlur={() => handleFieldBlur(PASSWORD_FIELD)}
+                        onBlur={() => handleFieldBlur(FIELDS.PASSWORD)}
                         className={INPUT_CN}
                     />
 
@@ -242,15 +242,15 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                 </div>
 
                 <FieldErrorCodesP
-                    idPrefix={PASSWORD_FIELD}
+                    idPrefix={FIELDS.PASSWORD}
                     errorMessages={pwTs}
-                    errorCodes={fieldErrorCodes[PASSWORD_FIELD]}
+                    errorCodes={fieldErrorCodes[FIELDS.PASSWORD]}
                 />
             </div>
             
             {/* password confirmation field */}
             <div className='flex flex-col mt-(--spacing-48)'>
-                <label htmlFor={PASSWORD_CONFIRMATION_FIELD}>
+                <label htmlFor={FIELDS.PASSWORD_CONFIRMATION}>
                     {formT('passwordConfirmationLabel')}
                 </label>
 
@@ -258,14 +258,14 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                     ${hasPasswordConfirmationError ? INPUT_CONTAINER_ERROR_CN : INPUT_CONTAINER_DEFAULT_CN}`}
                 >
                     <Input
-                        idName={PASSWORD_CONFIRMATION_FIELD}
-                        ariaDescribedby={`${PASSWORD_CONFIRMATION_FIELD}${FILED_ERROR_CODE_POSTFIX}`}
+                        idName={FIELDS.PASSWORD_CONFIRMATION}
+                        ariaDescribedby={`${FIELDS.PASSWORD_CONFIRMATION}${FILED_ERROR_CODE_POSTFIX}`}
                         type={isPasswordConfirmationShown ? "text": "password"}
                         placeholder={formT('passwordConfirmationPlaceholder')}
-                        maxLength={PASSWORD_MAX_LENGTH}
-                        value={formData[PASSWORD_CONFIRMATION_FIELD]}
+                        maxLength={LENGTHS.PASSWORD_MAX}
+                        value={formData[FIELDS.PASSWORD_CONFIRMATION]}
                         onChange={handleFieldChange}
-                        onBlur={() => handleFieldBlur(PASSWORD_CONFIRMATION_FIELD)}
+                        onBlur={() => handleFieldBlur(FIELDS.PASSWORD_CONFIRMATION)}
                         className={INPUT_CN}
                     />
 
@@ -281,9 +281,9 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                 </div>
 
                 <FieldErrorCodesP
-                    idPrefix={PASSWORD_CONFIRMATION_FIELD}
+                    idPrefix={FIELDS.PASSWORD_CONFIRMATION}
                     errorMessages={pwcTs}
-                    errorCodes={fieldErrorCodes[PASSWORD_CONFIRMATION_FIELD]}
+                    errorCodes={fieldErrorCodes[FIELDS.PASSWORD_CONFIRMATION]}
                 />
             </div>
 

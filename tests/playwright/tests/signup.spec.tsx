@@ -138,23 +138,23 @@ interface SignupFixture {
   mockEmail: string;
 }
 const signupTest = test.extend<SignupFixture>({
-  signupPage: async ({ page }, use) => {
+  signupPage: async ({ page }, runFixture) => {
     const po = new SignupPage(page);
     await po.gotoSignup();
-    await use(po);
+    await runFixture(po);
   },
 
-  freshSignupPage: async ({ browser }, use) => {
+  freshSignupPage: async ({ browser }, runFixture) => {
     const context = await browser.newContext();
     const page = await context.newPage();
     const po = new SignupPage(page);
     await po.gotoSignup();
-    await use(po);
+    await runFixture(po);
     await context.close();
   },
 
-  mockEmail: async ({}, use) => {
-    await use(createMockEmail());
+  mockEmail: async ({}, runFixture) => {
+    await runFixture(createMockEmail());
   },
 });
 // -Fixture

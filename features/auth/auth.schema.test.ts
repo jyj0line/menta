@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as z from 'zod';
+import { assertSafeParseSuccess, assertSafeParseError } from '@/tests/vitest/utils/helper';
 
 import {
   emailSchema,
@@ -14,8 +15,8 @@ import {
     PASSWORD_CONFIRMAITON_ERROR_CODES
 } from '@/features/auth/results/auth.validationER.result';
 import {
-    EMAIL_FIELD,
-    PASSWORD_FIELD, PASSWORD_CONFIRMATION_FIELD
+    FIELDS.EMAIL,
+    FIELDS.PASSWORD, FIELDS.PASSWORD_CONFIRMATION
 } from '@/features/auth/constants/auth.field';
 
 describe('@/feature/auth/auth.schema.test.ts', () => {
@@ -31,7 +32,7 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                     (email) => {
                         const res = emailSchema.safeParse(email);
 
-                        expect(res.success).toBe(true);
+                        assertSafeParseSuccess(res);
                         expect(res.data).toBe(email);
                     }
                 )
@@ -48,8 +49,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 ])('fails. (%s)', (email) => {
                     const res = emailSchema.safeParse(email);
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         EMAIL_ERROR_CODES.INVALID_FORMAT
                     ]);
                 })
@@ -68,7 +69,7 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                     (password) => {
                         const res = passwordSchema.safeParse(password);
 
-                        expect(res.success).toBe(true);
+                        assertSafeParseSuccess(res);
                         expect(res.data).toBe(password);
                     }
                 )
@@ -78,8 +79,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password is shorter than the minimum length 8.', () => {
                     const res = passwordSchema.safeParse('Abc1!');
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.TOO_SHORT
                     ]);
                 })
@@ -87,8 +88,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password is longer than the maximum length 128.', () => {
                     const res = passwordSchema.safeParse('Abc1!' + 'a'.repeat(500));
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.TOO_LONG
                     ]);
                 })
@@ -96,8 +97,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password does not contain a lowercase letter.', () => {
                     const res = passwordSchema.safeParse('PASSWORD1!');
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.MISSING_LOWERCASE
                     ]);
                 })
@@ -105,8 +106,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password does not contain an uppercase letter.', () => {
                     const res = passwordSchema.safeParse('password1!');
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE
                     ]);
                 })
@@ -114,8 +115,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password does not contain a digit.', () => {
                     const res = passwordSchema.safeParse('Password!');
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.MISSING_NUMBER
                     ]);
                 })
@@ -123,8 +124,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password does not contain a special character.', () => {
                     const res = passwordSchema.safeParse('Password1');
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.MISSING_SPECIAL_CHAR
                     ]);
                 })
@@ -132,8 +133,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password violates all of the above requirements expect for the minimum length 8.', () => {
                     const res = passwordSchema.safeParse('');
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.TOO_SHORT,
                         PASSWORD_ERROR_CODES.MISSING_LOWERCASE,
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
@@ -145,8 +146,8 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
                 it('fails when the password violates all of the above requirements expect for the maximum length 128 and the uppercase letter.', () => {
                     const res = passwordSchema.safeParse('a'.repeat(500));
 
-                    expect(res.success).toBe(false);
-                    expect(z.flattenError(res.error as any).formErrors).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).formErrors).toEqual([
                         PASSWORD_ERROR_CODES.TOO_LONG,
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
                         PASSWORD_ERROR_CODES.MISSING_NUMBER,
@@ -162,14 +163,14 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
             describe('valid sign up form data: ', () => {
                 it('passes when all(email, password, and password confirmation) fields are valid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'test@example.com',
-                        [PASSWORD_FIELD]: 'Password1!',
-                        [PASSWORD_CONFIRMATION_FIELD]: 'Password1!'
+                        [FIELDS.EMAIL]: 'test@example.com',
+                        [FIELDS.PASSWORD]: 'Password1!',
+                        [FIELDS.PASSWORD_CONFIRMATION]: 'Password1!'
                     }
 
                     const res = signupFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(true);
+                    assertSafeParseSuccess(res);
                     expect(res.data).toEqual(data);
                 })
             })
@@ -177,75 +178,75 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
             describe('invalid sign up form data: ', () => {
                 it('fails when email field is invalid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'invalid-email',
-                        [PASSWORD_FIELD]: 'Password1!',
-                        [PASSWORD_CONFIRMATION_FIELD]: 'Password1!'
+                        [FIELDS.EMAIL]: 'invalid-email',
+                        [FIELDS.PASSWORD]: 'Password1!',
+                        [FIELDS.PASSWORD_CONFIRMATION]: 'Password1!'
                     }
 
                     const res = signupFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[EMAIL_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.EMAIL]).toEqual([
                         EMAIL_ERROR_CODES.INVALID_FORMAT
                     ]);
                 })
 
                 it('fails when password and password confirmation fields are invalid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'test@example.com',
-                        [PASSWORD_FIELD]: 'weak',
-                        [PASSWORD_CONFIRMATION_FIELD]: 'weakk'
+                        [FIELDS.EMAIL]: 'test@example.com',
+                        [FIELDS.PASSWORD]: 'weak',
+                        [FIELDS.PASSWORD_CONFIRMATION]: 'weakk'
                     }
 
                     const res = signupFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD]).toEqual([
                         PASSWORD_ERROR_CODES.TOO_SHORT,
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
                         PASSWORD_ERROR_CODES.MISSING_NUMBER,
                         PASSWORD_ERROR_CODES.MISSING_SPECIAL_CHAR
                     ]);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_CONFIRMATION_FIELD]).toEqual([
-                        PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD_CONFIRMATION]).toEqual([
+                         PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH
                     ]);
                 })
 
                 it('fails when password and password confirmation fileds do not match.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'test@example.com',
-                        [PASSWORD_FIELD]: 'Password1!',
-                        [PASSWORD_CONFIRMATION_FIELD]: 'Password2!'
+                        [FIELDS.EMAIL]: 'test@example.com',
+                        [FIELDS.PASSWORD]: 'Password1!',
+                        [FIELDS.PASSWORD_CONFIRMATION]: 'Password2!'
                     }
 
                     const res = signupFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_CONFIRMATION_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD_CONFIRMATION]).toEqual([
                         PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH
                     ]);
                 })
 
                 it('fails when all(email, password, and password confirmation) fields are invalid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'invalid',
-                        [PASSWORD_FIELD]: 'weak',
-                        [PASSWORD_CONFIRMATION_FIELD]: 'different'
+                        [FIELDS.EMAIL]: 'invalid',
+                        [FIELDS.PASSWORD]: 'weak',
+                        [FIELDS.PASSWORD_CONFIRMATION]: 'different'
                     }
 
                     const res = signupFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[EMAIL_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.EMAIL]).toEqual([
                         EMAIL_ERROR_CODES.INVALID_FORMAT
                     ]);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_FIELD]).toEqual([
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD]).toEqual([
                         PASSWORD_ERROR_CODES.TOO_SHORT,
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
                         PASSWORD_ERROR_CODES.MISSING_NUMBER,
                         PASSWORD_ERROR_CODES.MISSING_SPECIAL_CHAR
                     ]);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_CONFIRMATION_FIELD]).toEqual([
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD_CONFIRMATION]).toEqual([
                         PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH
                     ]);
                 })
@@ -256,13 +257,13 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
             describe('valid login form data: ', () => {
                 it('passes when all(email and password) fields are valid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'test@example.com',
-                        [PASSWORD_FIELD]: 'Password1!'
+                        [FIELDS.EMAIL]: 'test@example.com',
+                        [FIELDS.PASSWORD]: 'Password1!'
                     };
 
                     const res = loginFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(true);
+                    assertSafeParseSuccess(res);
                     expect(res.data).toEqual(data);
                 })
             })
@@ -270,28 +271,28 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
             describe('invalid login form data: ', () => {
                 it('fails when email field is invalid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'invalid',
-                        [PASSWORD_FIELD]: 'Password1!'
+                        [FIELDS.EMAIL]: 'invalid',
+                        [FIELDS.PASSWORD]: 'Password1!'
                     };
 
                     const res = loginFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[EMAIL_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.EMAIL]).toEqual([
                         EMAIL_ERROR_CODES.INVALID_FORMAT
                     ]);
                 })
 
                 it('fails when password field is invalid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'test@example.com',
-                        [PASSWORD_FIELD]: 'weak'
+                        [FIELDS.EMAIL]: 'test@example.com',
+                        [FIELDS.PASSWORD]: 'weak'
                     };
 
                     const res = loginFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD]).toEqual([
                         PASSWORD_ERROR_CODES.TOO_SHORT,
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
                         PASSWORD_ERROR_CODES.MISSING_NUMBER,
@@ -301,17 +302,17 @@ describe('@/feature/auth/auth.schema.test.ts', () => {
 
                 it('fails when all(email and password) fields are invalid.', () => {
                     const data = {
-                        [EMAIL_FIELD]: 'invalid',
-                        [PASSWORD_FIELD]: 'weak'
+                        [FIELDS.EMAIL]: 'invalid',
+                        [FIELDS.PASSWORD]: 'weak'
                     };
 
                     const res = loginFormDataSchema.safeParse(data);
 
-                    expect(res.success).toBe(false);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[EMAIL_FIELD]).toEqual([
+                    assertSafeParseError(res);
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.EMAIL]).toEqual([
                         EMAIL_ERROR_CODES.INVALID_FORMAT
                     ]);
-                    expect((z.flattenError(res.error as any).fieldErrors as any)[PASSWORD_FIELD]).toEqual([
+                    expect(z.flattenError(res.error).fieldErrors[FIELDS.PASSWORD]).toEqual([
                         PASSWORD_ERROR_CODES.TOO_SHORT,
                         PASSWORD_ERROR_CODES.MISSING_UPPERCASE,
                         PASSWORD_ERROR_CODES.MISSING_NUMBER,
