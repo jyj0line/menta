@@ -46,7 +46,7 @@ jobs:
         run: npm run supabase:lint
 
       - name: Test DB
-        run: npm run supabase:test:db
+        run: npm run supabase:test
 
       - name: Verify generated types are checked in
         run: |

@@ -67,7 +67,7 @@ jobs:
 
       # ── Setup Supabase Local DB ──────────────────────────────────────
       - name: Start DB
-        run: npm run supabase:dbstart
+        run: npm run supabase:start
 
       - name: Reset DB (apply migrations + seed)
         run: npm run supabase:reset
