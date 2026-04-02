@@ -37,7 +37,7 @@
 
 
 
-    "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN $NEXT_PUBLIC_SUPABASE_API_PROJECT_URL",
+    "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
     "playwright:deps": "npx playwright install --with-deps"
   },
   "dependencies": {

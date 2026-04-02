@@ -8,11 +8,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  NEXT_PUBLIC_NEXTJS_ORIGIN: http://localhost:3000
-  NEXT_PUBLIC_SUPABASE_API_PROJECT_URL: http://127.0.0.1:54321
-  NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE: sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH
-
 jobs:
   # ─────────────────────────────────────────────────────
   # Job 1: ESLint & i18n-check Test
@@ -92,6 +87,10 @@ jobs:
     needs: unit-integration-test
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_NEXTJS_ORIGIN: http://localhost:3000
+      NEXT_PUBLIC_SUPABASE_API_PROJECT_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE: sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH
 
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
