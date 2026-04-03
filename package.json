@@ -8,7 +8,7 @@
     "start": "next start",
 
     "eslint": "eslint",
-    "eslint--q": "eslint --quiet",
+    "eslint--qt": "eslint --quiet",
 
     "i18ncheck": "i18n-check --source en --locales i18n/messages/",
 

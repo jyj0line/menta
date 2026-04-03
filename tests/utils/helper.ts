@@ -10,7 +10,7 @@ export const KEYS = {
   DATA: 'data',
 
   // error tesult
-  SMTH: 'smth'
+  UNKN: 'unkn'
 } as const;
 export type Key = ValuesFromObject<typeof KEYS>;
 
@@ -46,13 +46,13 @@ export function assertSuccessT<D>(tesult: Tesult<Type>): asserts tesult is Succe
 }
 
 export type ErrorT = Tesult<typeof TYPES.ERROR> & {
-  readonly [KEYS.SMTH]: unknown;
+  readonly [KEYS.UNKN]: unknown;
 }
 
-export const errorT = (smth: unknown): ErrorT => {
+export const errorT = (unkn: unknown): ErrorT => {
   const tesult = {
     [KEYS.TYPE]: TYPES.ERROR,
-    [KEYS.SMTH]: smth
+    [KEYS.UNKN]: unkn
   } satisfies ErrorT;
   return Object.freeze(tesult);
 }
@@ -86,13 +86,13 @@ export const createSpedUrl = (url: string, sps: Record<SpKey, string>): string =
 const sleep = (ms: number) => {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
-type PollUntilOptions<S extends SuccessT<any>, E extends ErrorT> = {
+type PollUntilOptions<S extends SuccessT<unknown>, E extends ErrorT> = {
   checkFnRet: (fnRet: S | E) => boolean;
   timeout: number;
   interval: number;
   fallback: E;
 };
-export const pollUntil = async<S extends SuccessT<any>, E extends ErrorT>(
+export const pollUntil = async<S extends SuccessT<unknown>, E extends ErrorT>(
   fn: () => Promise<S | E>,
   {
     checkFnRet,
