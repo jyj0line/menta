@@ -1,11 +1,18 @@
 import { test, expect, type Page } from '@playwright/test';
-import { assertNotNull, createSpedUrl, pollUntil } from '@/tests/utils/helper';
+import {
+  type SuccessT, successT, isSuccessT, assertSuccessT,
+  type ErrorT, errorT,
+  assertDefined,
+  createSpedUrl, pollUntil,
+  KEYS
+} from '@/tests/utils/helper';
 import { TEST_APIS, MOCKS, createMockEmail } from '@/tests/utils/mock';
 
 import { GUEST_ROUTES } from '@/utils/constants/routes/guest.route';
 import { ORIGINS, DEFAULT_PUBLIC_ROUTES } from '@/utils/constants/routes/public.route';
 import { PROTECTED_ROUTES } from '@/utils/constants/routes/protected.route';
 import { SP_KEYS } from '@/utils/constants/sp';
+import { assert } from 'console';
 
 const NEXT_PATH = PROTECTED_ROUTES.MY;
 const NEXT_URL = `${ORIGINS.NEXTJS}${NEXT_PATH}`;
@@ -37,34 +44,54 @@ type MessageidRes = {
   HTML: string;
 };
 
-type GetMessageIdRet = string | null;
-type GetMessageHtmlRet = string | null;
+type GetMessageIdsSuccessT = SuccessT<string[]>
+type GetMessageIdsErrorT = ErrorT;
+type GetMessageIdsTesult = GetMessageIdsSuccessT | GetMessageIdsErrorT;
+const getMessageIdsRetFallback: GetMessageIdsErrorT = errorT('getMessageIdsRetFallback');
+
+type GetMessageHtmlSuccessT = SuccessT<string>;
+type GetMessageHtmlErrorT = ErrorT;
+type GetMessageHtmlTesult = GetMessageHtmlSuccessT | GetMessageHtmlErrorT;
+const getMessageHtmlRetFallback: GetMessageHtmlErrorT = errorT('getMessageHtmlRetFallback');
+
+type ExtractLinkSuccessT = SuccessT<string>;
+type ExtractLinkErrorT = ErrorT;
+type ExtractLinkTesult = ExtractLinkSuccessT | ExtractLinkErrorT;
+const extractLinkRetFallback: ExtractLinkErrorT = errorT('extractLinkRetFallback');
+
+type DeleteMessagesSuccessT = SuccessT<null>;
+type DeleteMessagesErrorT = ErrorT;
+type DeleteMessagesTesult = DeleteMessagesSuccessT | DeleteMessagesErrorT;
+const deleteMessagesRetFallback: DeleteMessagesErrorT = errorT('deleteMessagesRetFallback');
+
 const mailpit = {
-  async getMessageId(toAddress: string, timeout: number, interval: number): Promise<GetMessageIdRet> {
-    return pollUntil<GetMessageIdRet, Extract<GetMessageIdRet, null>>(
+  async getMessageIds(toAddress: string, timeout: number, interval: number): Promise<GetMessageIdsTesult> {
+    return pollUntil<GetMessageIdsSuccessT, GetMessageIdsErrorT>(
       async () => {
         const res = await fetch(MAILPIT_MESSAGES_API, {
           headers: { accept: "application/json" },
           method: "GET",
           cache: "no-store",
         });
-        if (!res.ok) return null;
+        if (!res.ok) return getMessageIdsRetFallback;
 
         const data: MessagesRes = await res.json();
-        return data.messages.find((m) =>
-          m.To.some((t) => t.Address === toAddress)
-        )?.ID ?? null;
+        return successT(
+          data.messages
+            .filter((m) => m.To.some((t) => t.Address === toAddress))
+            .map((m) => m.ID)
+        );
       },{
-        checkFnRet: (id) => id !== null,
+        checkFnRet: (tesult) => isSuccessT(tesult),
         timeout: timeout,
         interval: interval,
-        fallback: null
+        fallback: getMessageIdsRetFallback
       }
     );
   },
 
-  async getMessageHtml(messageId: string, timeout: number, interval: number): Promise<GetMessageHtmlRet > {
-    return pollUntil<GetMessageHtmlRet, Extract<GetMessageHtmlRet, null>>(
+  async getMessageHtml(messageId: string, timeout: number, interval: number): Promise<GetMessageHtmlTesult > {
+    return pollUntil<GetMessageHtmlSuccessT, GetMessageHtmlErrorT>(
       async () => {
         const res = await fetch(createMailpitMessageApi(messageId), {
           headers: {
@@ -73,32 +100,37 @@ const mailpit = {
           method: "GET",
           cache: "no-store"
         });
-        if (!res.ok) return null;
+        if (!res.ok) return getMessageHtmlRetFallback;
 
         const data: MessageidRes = await res.json();
-        return data.HTML;
+        return successT(data.HTML);
       }, {
-        checkFnRet: (html) => html !== null,
+        checkFnRet: (tesult) => isSuccessT(tesult),
         timeout: timeout,
         interval: interval,
-        fallback: null
+        fallback: getMessageHtmlRetFallback
       }
     );
   },
 
-  extractLink(messageHTML: string): string | null {
+  extractLink(messageHTML: string): ExtractLinkTesult {
     const link = messageHTML.match(EMAIL_VERIFICATION_LINK_MATCHER)?.[1];
-    if (!link) return null;
-    return link.replace(/&amp;/g, '&');
+    if (!link) return extractLinkRetFallback;
+    return successT(link.replace(/&amp;/g, '&'));
   },
 
-  async deleteMessages(): Promise<void> {
-    await fetch(MAILPIT_MESSAGES_API, {
+  async deleteMessages(ids: string[]): Promise<DeleteMessagesTesult> {
+    const res = await fetch(MAILPIT_MESSAGES_API, {
       headers: {
         accept: "application/json",
       },
-      method: 'DELETE'
+      method: 'DELETE',
+      body: JSON.stringify({
+        "IDs": ids
+      })
     });
+    if (!res.ok) return deleteMessagesRetFallback;
+    return successT(null);
   },
 };
 // -Mailpit
@@ -174,26 +206,39 @@ const expectSignupSuccess = async (
   await expect(signupPage.pwcInput).not.toBeVisible();
   await expect(signupPage.submitButton).not.toBeVisible();
 };
+
 // get email verification link
 const expectLink = async (
   email: string
 ): Promise<string> => {
-  const messageId = await mailpit.getMessageId(email, TIMEOUT, INTERVAL);
-  assertNotNull(messageId, 'messageId is null');
-  const messageHTML = await mailpit.getMessageHtml(messageId, TIMEOUT, INTERVAL);
-  assertNotNull(messageHTML, 'messageHTML is null');
-  const link = mailpit.extractLink(messageHTML);
-  assertNotNull(link, 'link is null');
+  const idsTesult = await mailpit.getMessageIds(email, TIMEOUT, INTERVAL);
+  assertSuccessT(idsTesult);
+  expect(idsTesult[KEYS.DATA].length).toBe(1);
+
+  const id = idsTesult[KEYS.DATA][0];
+  assertDefined(id);
+  const htmlTesult = await mailpit.getMessageHtml(id, TIMEOUT, INTERVAL);
+  assertSuccessT(htmlTesult);
+  const html = htmlTesult[KEYS.DATA];
+
+  const linkTesult = mailpit.extractLink(html);
+  assertSuccessT(linkTesult);
+  const link = linkTesult[KEYS.DATA];
+
   return link;
 };
+
+// delete emails sented to the user
+const expectDeleteMessages = async (toAddress: string) => {
+  const idsTesult = await mailpit.getMessageIds(toAddress, TIMEOUT, INTERVAL);
+  assertSuccessT(idsTesult);
+  const deleteTesult = await mailpit.deleteMessages(idsTesult[KEYS.DATA]);
+  assertSuccessT(deleteTesult);
+}
 // -Helper
 
 // Test-
 signupTest.describe('/signup: ', () => {
-  signupTest.beforeEach(async () => {
-    await mailpit.deleteMessages();
-  });
-
   signupTest.describe('signup success: ', () => {
     signupTest(
       'sign up success: ',
@@ -218,8 +263,8 @@ signupTest.describe('/signup: ', () => {
         // sign up -> success UI
         await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
         
-        // delete the first email
-        await mailpit.deleteMessages();
+        // delete emails sented to the user
+        await expectDeleteMessages(mockEmail);
 
         // duplicate sign up with unverified email -> success UI
         await signupPage.gotoSignup();
@@ -268,15 +313,16 @@ signupTest.describe('/signup: ', () => {
           timeout: TIMEOUT
         });
 
-        // delete the first email
-        await mailpit.deleteMessages();
+        // delete emails sented to the user
+        await expectDeleteMessages(mockEmail);
 
         // duplicate sign up -> success UI
         await expectSignupSuccess(freshSignupPage, mockEmail, MOCKS.PASSWORD);
 
         // but NO new email is sent
-        const messageId = await mailpit.getMessageId(mockEmail, TIMEOUT, INTERVAL);
-        expect(messageId).toBeNull();
+        const idsTesult = await mailpit.getMessageIds(mockEmail, TIMEOUT, INTERVAL);
+        assertSuccessT(idsTesult);
+        expect(idsTesult[KEYS.DATA].length).toBe(0);
       },
     );
 

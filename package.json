@@ -7,22 +7,17 @@
     "build--tp": "next build --turbopack",
     "start": "next start",
 
-
-
     "eslint": "eslint",
     "eslint--q": "eslint --quiet",
 
-
-
     "i18ncheck": "i18n-check --source en --locales i18n/messages/",
-
-
 
     "vitest--cvr": "vitest run --coverage",
 
-    "playwright": "npx playwright test",
-
-
+    "playwright:deps": "npx playwright install --with-deps",
+    "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
+    "playwright": "playwright test",
+    "playwright--ui": "playwright test --ui",
 
     "supabase:dbstart": "supabase db start",
     "supabase:lint": "supabase db lint",
@@ -30,15 +25,11 @@
     "supabase:type": "supabase gen types typescript --local > supabase/type.ts",
     "supabase:reset": "supabase db reset",
     "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
 
     "supabase:link": "supabase link --project-ref $SUPABASE_PROJECT_ID",
     "supabase:push": "supabase db push",
-    "supabase:push--dr": "supabase db push --dry-run",
-
-
-
-    "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
-    "playwright:deps": "npx playwright install --with-deps"
+    "supabase:push--dr": "supabase db push --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
