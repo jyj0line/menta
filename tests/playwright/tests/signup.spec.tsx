@@ -82,7 +82,7 @@ const mailpit = {
             .map((m) => m.ID)
         );
       },{
-        checkFnRet: (tesult) => isSuccessT(tesult),
+        checkFnRet: (tesult) => isSuccessT(tesult) && tesult[KEYS.DATA].length > 0,
         timeout: timeout,
         interval: interval,
         fallback: getMessageIdsRetFallback
@@ -155,8 +155,15 @@ class SignupPage {
   // Actions-
   async signup(email: string, password: string) {
     await this.emailInput.fill(email);
+    await this.emailInput.blur();
+
     await this.passwordInput.fill(password);
+    await this.passwordInput.blur();
+
     await this.pwcInput.fill(password);
+    await this.pwcInput.blur();
+    
+    await expect(this.submitButton).toBeEnabled();
     await this.submitButton.click();
   }
   // -Actions
