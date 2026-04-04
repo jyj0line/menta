@@ -14,8 +14,8 @@ jobs:
   # ─────────────────────────────────────────────────────
   eslint-i18ncheck-test:
     name: ESLint & i18n-check Test
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
@@ -44,8 +44,8 @@ jobs:
   unit-integration-test:
     name: Unit & Integration Test (Vitest + RTL)
     needs: eslint-i18ncheck-test
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
@@ -85,8 +85,8 @@ jobs:
   e2e-tests:
     name: E2E Test (Playwright)
     needs: unit-integration-test
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       NEXT_PUBLIC_NEXTJS_ORIGIN: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_API_PROJECT_URL: http://127.0.0.1:54321
