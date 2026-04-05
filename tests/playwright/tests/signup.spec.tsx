@@ -24,8 +24,8 @@ const CHECK_EMAIL_MESSAGE = /Please check your email./;
 
 const EMAIL_VERIFICATION_LINK_MATCHER = /href="([^"]*auth\/confirm[^"]*)"/;
 
-const TIMEOUT = 20_000;
-const INTERVAL = 500;
+const TIMEOUT = 30_000;
+const INTERVAL = 1_000;
 const GRACE = 5_000; 
 
 // Mailpit-
