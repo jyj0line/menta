@@ -1,7 +1,7 @@
 import { isAuthApiError } from '@supabase/supabase-js';
 
 import { LOGIN_ERROR_CODES, type LoginER, loginER } from '@/features/auth/results/auth.loginER.result';
-import { EMAIL_FIELD } from '@/features/auth/constants/auth.field';
+import { FIELDS } from '@/features/auth/constants/auth.field';
 
 import { createSupabaseServerClient as importedCreateSupabaseServerClient} from '@/libs/supabase/server';
 import { SUPABASE_ERROR_CODES } from '@/libs/supabase/results/supabase.result';
@@ -14,7 +14,7 @@ import { getSafePathname } from '@/utils/helpers/route.helper';
 import { logging } from '@/utils/loggings/logging';
 
 export type SignupServiceR = 
-  SuccessR<Record<typeof EMAIL_FIELD, string>>
+  SuccessR<Record<typeof FIELDS.EMAIL, string>>
   | UnexpectedER
 ;
 export type LoginServiceR = 
@@ -42,7 +42,7 @@ export class SupabaseAuthService implements AuthService {
       }
     });
 
-    if (data) return successR({ [EMAIL_FIELD]: email });
+    if (data) return successR({ [FIELDS.EMAIL]: email });
 
     logging(error);
     return unexpectedER();

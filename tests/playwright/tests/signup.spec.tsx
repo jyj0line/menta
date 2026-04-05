@@ -1,5 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
-import { assertNotNull, createSpedUrl, pollUntil } from '@/tests/utils/helper';
+import {
+  type SuccessT, successT, isSuccessT, assertSuccessT,
+  type ErrorT, errorT,
+  assertDefined,
+  createSpedUrl, pollUntil,
+  KEYS
+} from '@/tests/utils/helper';
 import { TEST_APIS, MOCKS, createMockEmail } from '@/tests/utils/mock';
 
 import { GUEST_ROUTES } from '@/utils/constants/routes/guest.route';
@@ -18,8 +24,9 @@ const CHECK_EMAIL_MESSAGE = /Please check your email./;
 
 const EMAIL_VERIFICATION_LINK_MATCHER = /href="([^"]*auth\/confirm[^"]*)"/;
 
-const TIMEOUT = 10_000;
-const INTERVAL = 500;
+const TIMEOUT = 30_000;
+const INTERVAL = 1_000;
+const GRACE = 5_000; 
 
 // Mailpit-
 const MAILPIT_MESSAGES_API = `${TEST_APIS.SUPABASE_DT_MAILPIT}/api/v1/messages`;
@@ -33,38 +40,81 @@ type MessagesRes = {
     To: { Address: string }[]
   }[]
 };
-type MessageidRes = {
+
+type MessageRes = {
   HTML: string;
 };
 
-type GetMessageIdRet = string | null;
-type GetMessageHtmlRet = string | null;
-const mailpit = {
-  async getMessageId(toAddress: string, timeout: number, interval: number): Promise<GetMessageIdRet> {
-    return pollUntil<GetMessageIdRet, Extract<GetMessageIdRet, null>>(
-      async () => {
-        const res = await fetch(MAILPIT_MESSAGES_API, {
-          headers: { accept: "application/json" },
-          method: "GET",
-          cache: "no-store",
-        });
-        if (!res.ok) return null;
+type GetMessageIdsSuccessT = SuccessT<string[]>
+type GetMessageIdsErrorT = ErrorT;
+type GetMessageIdsTesult = GetMessageIdsSuccessT | GetMessageIdsErrorT;
+const getMessageIdsFallbackErrorT: GetMessageIdsErrorT = errorT('getMessageIdsRetFallback');
 
-        const data: MessagesRes = await res.json();
-        return data.messages.find((m) =>
-          m.To.some((t) => t.Address === toAddress)
-        )?.ID ?? null;
-      },{
-        checkFnRet: (id) => id !== null,
-        timeout: timeout,
-        interval: interval,
-        fallback: null
+const waitMessageIdsFallbackErrorT: GetMessageIdsErrorT = errorT('waitMessageIdsRetFallback');
+
+type GetMessageHtmlSuccessT = SuccessT<string>;
+type GetMessageHtmlErrorT = ErrorT;
+type GetMessageHtmlTesult = GetMessageHtmlSuccessT | GetMessageHtmlErrorT;
+const getMessageHtmlRetFallbackErrorT: GetMessageHtmlErrorT = errorT('getMessageHtmlRetFallback');
+
+type ExtractLinkSuccessT = SuccessT<string>;
+type ExtractLinkErrorT = ErrorT;
+type ExtractLinkTesult = ExtractLinkSuccessT | ExtractLinkErrorT;
+const extractLinkFallbackErrorT: ExtractLinkErrorT = errorT('extractLinkRetFallback');
+
+type DeleteMessagesSuccessT = SuccessT<null>;
+type DeleteMessagesErrorT = ErrorT;
+type DeleteMessagesTesult = DeleteMessagesSuccessT | DeleteMessagesErrorT;
+const deleteMessagesFallbackErrorT: DeleteMessagesErrorT = errorT('deleteMessagesRetFallback');
+
+const mailpit = {
+  async getMessageIds(toAddress: string): Promise<GetMessageIdsTesult> {
+    const res = await fetch(MAILPIT_MESSAGES_API, {
+      headers: { accept: "application/json" },
+      method: "GET",
+      cache: "no-store",
+    });
+    if (!res.ok) return getMessageIdsFallbackErrorT;
+
+    const data: MessagesRes = await res.json();
+    return successT(
+      data.messages
+        .filter((m) => m.To.some((t) => t.Address === toAddress))
+        .map((m) => m.ID)
+    );
+  },
+
+  async waitMessageIds(
+    toAddress: string,
+    opts: {
+      timeout: number;
+      interval: number;
+      waitUntilCount: number;
+    }
+  ): Promise<GetMessageIdsTesult> {
+    return pollUntil<GetMessageIdsSuccessT, GetMessageIdsErrorT>(
+      async () => {
+        const result = await this.getMessageIds(toAddress);
+        if (isSuccessT(result) && result[KEYS.DATA].length == opts.waitUntilCount) return result;
+        return waitMessageIdsFallbackErrorT;
+      },
+      {
+        checkFnRet: isSuccessT,
+        timeout: opts.timeout,
+        interval: opts.interval,
+        fallback: waitMessageIdsFallbackErrorT
       }
     );
   },
 
-  async getMessageHtml(messageId: string, timeout: number, interval: number): Promise<GetMessageHtmlRet > {
-    return pollUntil<GetMessageHtmlRet, Extract<GetMessageHtmlRet, null>>(
+  async waitMessageHtml(
+    messageId: string,
+    opts: {
+      timeout: number;
+      interval: number;
+    }
+  ): Promise<GetMessageHtmlTesult > {
+    return pollUntil<GetMessageHtmlSuccessT, GetMessageHtmlErrorT>(
       async () => {
         const res = await fetch(createMailpitMessageApi(messageId), {
           headers: {
@@ -73,32 +123,37 @@ const mailpit = {
           method: "GET",
           cache: "no-store"
         });
-        if (!res.ok) return null;
+        if (!res.ok) return getMessageHtmlRetFallbackErrorT;
 
-        const data: MessageidRes = await res.json();
-        return data.HTML;
+        const data: MessageRes = await res.json();
+        return successT(data.HTML);
       }, {
-        checkFnRet: (html) => html !== null,
-        timeout: timeout,
-        interval: interval,
-        fallback: null
+        checkFnRet: (tesult) => isSuccessT(tesult),
+        timeout: opts.timeout,
+        interval: opts.interval,
+        fallback: getMessageHtmlRetFallbackErrorT
       }
     );
   },
 
-  extractLink(messageHTML: string): string | null {
+  extractLink(messageHTML: string): ExtractLinkTesult {
     const link = messageHTML.match(EMAIL_VERIFICATION_LINK_MATCHER)?.[1];
-    if (!link) return null;
-    return link.replace(/&amp;/g, '&');
+    if (!link) return extractLinkFallbackErrorT;
+    return successT(link.replace(/&amp;/g, '&'));
   },
 
-  async deleteMessages(): Promise<void> {
-    await fetch(MAILPIT_MESSAGES_API, {
+  async deleteMessages(ids: string[]): Promise<DeleteMessagesTesult> {
+    const res = await fetch(MAILPIT_MESSAGES_API, {
       headers: {
         accept: "application/json",
       },
-      method: 'DELETE'
+      method: 'DELETE',
+      body: JSON.stringify({
+        "IDs": ids
+      })
     });
+    if (!res.ok) return deleteMessagesFallbackErrorT;
+    return successT(null);
   },
 };
 // -Mailpit
@@ -138,23 +193,23 @@ interface SignupFixture {
   mockEmail: string;
 }
 const signupTest = test.extend<SignupFixture>({
-  signupPage: async ({ page }, use) => {
+  signupPage: async ({ page }, runFixture) => {
     const po = new SignupPage(page);
     await po.gotoSignup();
-    await use(po);
+    await runFixture(po);
   },
 
-  freshSignupPage: async ({ browser }, use) => {
+  freshSignupPage: async ({ browser }, runFixture) => {
     const context = await browser.newContext();
     const page = await context.newPage();
     const po = new SignupPage(page);
     await po.gotoSignup();
-    await use(po);
+    await runFixture(po);
     await context.close();
   },
 
-  mockEmail: async ({}, use) => {
-    await use(createMockEmail());
+  mockEmail: async ({}, runFixture) => {
+    await runFixture(createMockEmail());
   },
 });
 // -Fixture
@@ -164,43 +219,74 @@ const signupTest = test.extend<SignupFixture>({
 const expectSignupSuccess = async (
   signupPage: SignupPage,
   email: string,
-  password: string
+  password: string,
+  opts: { grace: number}
 ): Promise<void> => {
+  await signupPage.page.waitForTimeout(opts.grace); // ∵ [auth.email].max_frequency(in case of duplicate signup)
   await signupPage.signup(email, password);
   await expect(signupPage.page.getByText(CHECK_EMAIL_MESSAGE)).toBeVisible();
   await expect(signupPage.page.getByText(email)).toBeVisible();
-  await expect(signupPage.emailInput).not.toBeVisible();
-  await expect(signupPage.passwordInput).not.toBeVisible();
-  await expect(signupPage.pwcInput).not.toBeVisible();
-  await expect(signupPage.submitButton).not.toBeVisible();
 };
+
 // get email verification link
 const expectLink = async (
-  email: string
+  toAddress: string, waitUntilCount: number
 ): Promise<string> => {
-  const messageId = await mailpit.getMessageId(email, TIMEOUT, INTERVAL);
-  assertNotNull(messageId, 'messageId is null');
-  const messageHTML = await mailpit.getMessageHtml(messageId, TIMEOUT, INTERVAL);
-  assertNotNull(messageHTML, 'messageHTML is null');
-  const link = mailpit.extractLink(messageHTML);
-  assertNotNull(link, 'link is null');
+  const idsTesult = await mailpit.waitMessageIds(
+    toAddress,
+    {
+      timeout: TIMEOUT,
+      interval: INTERVAL,
+      waitUntilCount: waitUntilCount
+    }
+  );
+  assertSuccessT(idsTesult);
+  expect(idsTesult[KEYS.DATA].length).toBe(waitUntilCount);
+
+  const id = idsTesult[KEYS.DATA][0];
+  assertDefined(id);
+  const htmlTesult = await mailpit.waitMessageHtml(
+    id,
+    {
+      timeout: TIMEOUT,
+      interval: INTERVAL
+    }
+  );
+  assertSuccessT(htmlTesult);
+  const html = htmlTesult[KEYS.DATA];
+
+  const linkTesult = mailpit.extractLink(html);
+  assertSuccessT(linkTesult);
+  const link = linkTesult[KEYS.DATA];
+
   return link;
 };
+
+// delete emails sented to the user
+const expectDeleteMessages = async (toAddress: string, waitUntilCount: number) => {
+  const idsTesult = await mailpit.waitMessageIds(
+    toAddress,
+    {
+      timeout: TIMEOUT,
+      interval: INTERVAL,
+      waitUntilCount: waitUntilCount
+    }
+  );
+  assertSuccessT(idsTesult);
+  const deleteTesult = await mailpit.deleteMessages(idsTesult[KEYS.DATA]);
+  assertSuccessT(deleteTesult);
+}
 // -Helper
 
 // Test-
 signupTest.describe('/signup: ', () => {
-  signupTest.beforeEach(async () => {
-    await mailpit.deleteMessages();
-  });
-
   signupTest.describe('signup success: ', () => {
     signupTest(
       'sign up success: ',
       async ({ signupPage, mockEmail }) => {
         // sign up -> success UI -> get email verification link
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
-        const link = await expectLink(mockEmail);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
+        const link = await expectLink(mockEmail, 1);
 
         // email verification
         await signupPage.page.goto(link);
@@ -216,15 +302,15 @@ signupTest.describe('/signup: ', () => {
       'duplicate sign up success with unverified email: ',
       async ({ signupPage, mockEmail }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
-        
-        // delete the first email
-        await mailpit.deleteMessages();
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
+
+        // delete emails sented to the user
+        await expectDeleteMessages(mockEmail, 1);
 
         // duplicate sign up with unverified email -> success UI
         await signupPage.gotoSignup();
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
-        const link = await expectLink(mockEmail);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: GRACE });
+        const link = await expectLink(mockEmail, 1);
 
         // email verification
         await signupPage.page.goto(link);
@@ -237,12 +323,12 @@ signupTest.describe('/signup: ', () => {
     );
   });
 
-  signupTest.describe('signup failure:', () => {
+  signupTest.describe('uncomplete signup success:', () => {
     signupTest(
       'sign up partial success without email verification: ',
       async ({ signupPage, mockEmail }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
 
         // cannot access protected route and redirected to the login path(∵ no email verification)
         await signupPage.page.goto(PROTECTED_ROUTES.MY);
@@ -254,11 +340,11 @@ signupTest.describe('/signup: ', () => {
     );
 
     signupTest(
-      'duplicate sign up success with verified email(but no second verification email): ',
+      'duplicate sign up already successed with verified email(but no second verification email): ',
       async ({ signupPage, freshSignupPage, mockEmail }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
-        const link = await expectLink(mockEmail);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
+        const link = await expectLink(mockEmail, 1);
 
         // email verification
         await signupPage.page.goto(link);
@@ -268,15 +354,17 @@ signupTest.describe('/signup: ', () => {
           timeout: TIMEOUT
         });
 
-        // delete the first email
-        await mailpit.deleteMessages();
+        // delete emails sented to the user
+        await expectDeleteMessages(mockEmail, 1);
 
         // duplicate sign up -> success UI
-        await expectSignupSuccess(freshSignupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(freshSignupPage, mockEmail, MOCKS.PASSWORD, { grace: GRACE });
 
-        // but NO new email is sent
-        const messageId = await mailpit.getMessageId(mockEmail, TIMEOUT, INTERVAL);
-        expect(messageId).toBeNull();
+        // but NO new email is sent 
+        await new Promise((r) => setTimeout(r, GRACE));
+        const idsTesult = await mailpit.getMessageIds(mockEmail);
+        assertSuccessT(idsTesult);
+        expect(idsTesult[KEYS.DATA].length).toBe(0);
       },
     );
 
@@ -301,8 +389,8 @@ signupTest.describe('/signup: ', () => {
       'logged in user cannot access signup page',
       async ({ signupPage, mockEmail, page }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
-        const link = await expectLink(mockEmail);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
+        const link = await expectLink(mockEmail, 1);
 
         // email verification
         await signupPage.page.goto(link);

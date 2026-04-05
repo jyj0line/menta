@@ -132,7 +132,7 @@ describe('@/utils/helpers/route.helper.ts', () => {
         () => {},
       ])('returns fallback for empty string path or on-string path',
         (path) => {
-          expect(getSafePathname(path as any)).toBe(DEFAULT_PUBLIC_ROUTES.NEXT);
+          expect(getSafePathname(path as unknown as string)).toBe(DEFAULT_PUBLIC_ROUTES.NEXT);
         }
       );
     });

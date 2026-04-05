@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithNextintl } from '@/tests/vitest/utils/helper';
+import { renderWithNextintl } from '@/tests/rtl/utils/helper';
 
 import { Button, Toggle, Link, Logo } from '@/components/atoms/Click';
 

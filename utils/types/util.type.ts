@@ -1,7 +1,7 @@
-export type KeysFromObject<T extends Object> = keyof T;
-export type ValuesFromObject<T extends Object> = T[keyof T];
+export type KeysFromObject<T extends object> = keyof T;
+export type ValuesFromObject<T extends object> = T[keyof T];
 
-export type ObjectOfOptionalStringArrayFromObject<T extends Object> = {
+export type ObjectOfOptionalStringArrayFromObject<T extends object> = {
   [K in keyof T]?: string[];
 };
 
