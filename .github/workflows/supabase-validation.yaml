@@ -61,7 +61,7 @@ jobs:
     needs: supabase-validation
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    if: github.base_name == 'main' || github.base_name == 'develop'
     environment: ${{ github.ref_name == 'main' && 'menta-main-environment' || 'menta-develop-environment' }}
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

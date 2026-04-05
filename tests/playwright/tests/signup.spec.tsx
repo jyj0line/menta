@@ -219,8 +219,10 @@ const signupTest = test.extend<SignupFixture>({
 const expectSignupSuccess = async (
   signupPage: SignupPage,
   email: string,
-  password: string
+  password: string,
+  opts: { grace: number}
 ): Promise<void> => {
+  await signupPage.page.waitForTimeout(opts.grace); // ∵ [auth.email].max_frequency(in case of duplicate signup)
   await signupPage.signup(email, password);
   await expect(signupPage.page.getByText(CHECK_EMAIL_MESSAGE)).toBeVisible();
   await expect(signupPage.page.getByText(email)).toBeVisible();
@@ -283,7 +285,7 @@ signupTest.describe('/signup: ', () => {
       'sign up success: ',
       async ({ signupPage, mockEmail }) => {
         // sign up -> success UI -> get email verification link
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
         const link = await expectLink(mockEmail, 1);
 
         // email verification
@@ -300,14 +302,14 @@ signupTest.describe('/signup: ', () => {
       'duplicate sign up success with unverified email: ',
       async ({ signupPage, mockEmail }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
-        
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
+
         // delete emails sented to the user
         await expectDeleteMessages(mockEmail, 1);
 
         // duplicate sign up with unverified email -> success UI
         await signupPage.gotoSignup();
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: GRACE });
         const link = await expectLink(mockEmail, 1);
 
         // email verification
@@ -326,7 +328,7 @@ signupTest.describe('/signup: ', () => {
       'sign up partial success without email verification: ',
       async ({ signupPage, mockEmail }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
 
         // cannot access protected route and redirected to the login path(∵ no email verification)
         await signupPage.page.goto(PROTECTED_ROUTES.MY);
@@ -341,7 +343,7 @@ signupTest.describe('/signup: ', () => {
       'duplicate sign up already successed with verified email(but no second verification email): ',
       async ({ signupPage, freshSignupPage, mockEmail }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
         const link = await expectLink(mockEmail, 1);
 
         // email verification
@@ -356,7 +358,7 @@ signupTest.describe('/signup: ', () => {
         await expectDeleteMessages(mockEmail, 1);
 
         // duplicate sign up -> success UI
-        await expectSignupSuccess(freshSignupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(freshSignupPage, mockEmail, MOCKS.PASSWORD, { grace: GRACE });
 
         // but NO new email is sent 
         await new Promise((r) => setTimeout(r, GRACE));
@@ -387,7 +389,7 @@ signupTest.describe('/signup: ', () => {
       'logged in user cannot access signup page',
       async ({ signupPage, mockEmail, page }) => {
         // sign up -> success UI
-        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD);
+        await expectSignupSuccess(signupPage, mockEmail, MOCKS.PASSWORD, { grace: 0 });
         const link = await expectLink(mockEmail, 1);
 
         // email verification
