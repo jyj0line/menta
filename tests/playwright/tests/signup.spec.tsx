@@ -50,6 +50,8 @@ type GetMessageIdsErrorT = ErrorT;
 type GetMessageIdsTesult = GetMessageIdsSuccessT | GetMessageIdsErrorT;
 const getMessageIdsFallbackErrorT: GetMessageIdsErrorT = errorT('getMessageIdsRetFallback');
 
+const waitMessageIdsFallbackErrorT: GetMessageIdsErrorT = errorT('waitMessageIdsRetFallback');
+
 type GetMessageHtmlSuccessT = SuccessT<string>;
 type GetMessageHtmlErrorT = ErrorT;
 type GetMessageHtmlTesult = GetMessageHtmlSuccessT | GetMessageHtmlErrorT;
@@ -94,13 +96,13 @@ const mailpit = {
       async () => {
         const result = await this.getMessageIds(toAddress);
         if (isSuccessT(result) && result[KEYS.DATA].length == opts.waitUntilCount) return result;
-        return getMessageIdsFallbackErrorT;
+        return waitMessageIdsFallbackErrorT;
       },
       {
         checkFnRet: isSuccessT,
         timeout: opts.timeout,
         interval: opts.interval,
-        fallback: getMessageIdsFallbackErrorT,
+        fallback: waitMessageIdsFallbackErrorT
       }
     );
   },

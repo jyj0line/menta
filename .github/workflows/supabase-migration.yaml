@@ -12,8 +12,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  supabase_migration:
-    name: Remote DB Migration
+  # ─────────────────────────────────────────────────────
+  # Job 1: supabase migration (from local db to remote db)
+  # ─────────────────────────────────────────────────────
+  supabase-migration:
+    name: supabase migration (from local db to remote db)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     if: github.ref_name == 'main' || github.ref_name == 'develop'

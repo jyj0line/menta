@@ -13,10 +13,10 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: Local DB Validation (lint, test, type-check)
+  # Job 1: supabase validation (local db lint, test, type-check)
   # ─────────────────────────────────────────────────────
-  supabase_validation:
-    name: Local DB Validation (lint, test, type-check)
+  supabase-validation:
+    name: supabase validation (local db lint, test, type-check)
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -54,11 +54,11 @@ jobs:
           fi
 
   # ─────────────────────────────────────────────────────
-  # Job 2: Remote DB Migration Dry-run
+  # Job 2: supabase migration dry run (from local db to remote db)
   # ─────────────────────────────────────────────────────
-  supabase_migration_dryrun:
-    name: Remote DB Migration Dry-run
-    needs: supabase_validation
+  supabase-migration-dryrun:
+    name: supabase migration dry run (from local db to remote db)
+    needs: supabase-validation
     runs-on: ubuntu-latest
     timeout-minutes: 60
     if: github.ref_name == 'main' || github.ref_name == 'develop'
@@ -82,7 +82,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ── Remote DB Migration Dry-run ───────────────────────────
+      # ── Remote DB Migration Dry run ───────────────────────────
       - name: Link Supabase remote project
         run: npm run supabase:link
 

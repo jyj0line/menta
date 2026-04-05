@@ -140,7 +140,6 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
 
 
         
-    const metadataT = useTranslations('metadata');
     const formT = useTranslations('auth.component.signup.form');
     const successT = useTranslations('auth.component.signup.success');
 
