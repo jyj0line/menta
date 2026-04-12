@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const sharedEnvsSchema = z.object({
+export const sharedEnvSchema = z.object({
   NEXT_PUBLIC_NEXTJS_ORIGIN: z.url({
     error: 'NEXT_PUBLIC_NEXTJS_ORIGIN is invalid.'
   }),

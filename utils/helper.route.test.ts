@@ -1,19 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { createMockRequest } from '@/tests/utils/mock';
+import { createMockRequest } from '@/tests/helper.mock';
 
 import {
   getTrustedOrigin, getSafePathname,
   isGuestPathname, isProtectedPathname, isPublicPathname,
   createLoginUrl, createRootUrl,
   getSpValue
-} from '@/utils/helpers/route.helper';
+} from '@/utils/helper.route';
 
 import { GUEST_ROUTES } from '@/utils/constants/routes/guest.route';
 import { PROTECTED_ROUTES } from '@/utils/constants/routes/protected.route';
 import { ORIGINS, PUBLIC_ROUTES, DEFAULT_PUBLIC_ROUTES } from '@/utils/constants/routes/public.route';
 import { SP_KEYS, type Sps } from "@/utils/constants/sp";
 
-describe('@/utils/helpers/route.helper.ts', () => {
+describe('@/utils/helper.route.ts', () => {
   describe('getTrustedOrigin() ', () => {
     it('returns the request origin when it matches a trusted origin.', () => {
       const { nextUrl } = createMockRequest('/', ORIGINS.NEXTJS);

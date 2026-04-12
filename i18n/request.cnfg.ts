@@ -1,7 +1,7 @@
 import { type Formats, hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
-import { routing } from '@/i18n/routing';
+import { routingConfig } from '@/i18n/routing.cnfg';
 
 export const formats = {
   dateTime: {
@@ -26,9 +26,9 @@ export const formats = {
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requestedLocale = await requestLocale;
-  const locale = hasLocale(routing.locales, requestedLocale)
+  const locale = hasLocale(routingConfig.locales, requestedLocale)
     ? requestedLocale
-    : routing.defaultLocale;
+    : routingConfig.defaultLocale;
 
   return {
     locale: locale,

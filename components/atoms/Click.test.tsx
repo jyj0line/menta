@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithNextintl } from '@/tests/rtl/utils/helper';
+import { renderWithNextintl } from '@/tests/rtl/rtl.helper';
 
 import { Button, Toggle, Link, Logo } from '@/components/atoms/Click';
 
-import * as routeHelperModule from '@/utils/helpers/route.helper';
+import * as routeHelperModule from '@/utils/helper.route';
 
 describe('@/components/atoms/Click.tsx', () => {
   describe('Button', () => {

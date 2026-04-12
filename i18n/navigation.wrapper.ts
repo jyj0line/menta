@@ -1,6 +1,6 @@
 import { createNavigation } from 'next-intl/navigation';
 
-import { routing } from '@/i18n/routing';
+import { routingConfig } from '@/i18n/routing.cnfg';
  
 export const { Link, redirect, usePathname, useRouter, getPathname } =
-  createNavigation(routing);
+  createNavigation(routingConfig);

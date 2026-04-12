@@ -1,8 +1,8 @@
-import { sharedEnvs } from "@/getEnvs/getSharedEnvs";
-import { ValuesFromObject } from "@/utils/types/util.type";
+import { sharedEnv } from "@/getEnv/getSharedEnv";
+import { ValuesFromObject } from "@/utils/type";
 
 export const ORIGINS = {
-  NEXTJS: sharedEnvs.NEXT_PUBLIC_NEXTJS_ORIGIN
+  NEXTJS: sharedEnv.NEXT_PUBLIC_NEXTJS_ORIGIN
 };
 
 

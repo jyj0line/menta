@@ -1,5 +1,3 @@
-import { string } from "zod";
-
 export type InputProps = {
     idName: string;
     ariaDescribedby: string;

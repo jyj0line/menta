@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { createMockFormData } from '@/tests/utils/mock';
+import { createMockFormData } from '@/tests/helper.mock';
 
 import { signupUsecase, loginUsecase } from '@/features/auth/auth.usecase';
 import { type AuthService } from '@/features/auth/auth.service';
@@ -10,7 +10,7 @@ import { EMAIL_ERROR_CODES, PASSWORD_ERROR_CODES, PASSWORD_CONFIRMAITON_ERROR_CO
 import { validationER } from '@/results/errorR/validationER.result';
 
 import { PROTECTED_ROUTES } from '@/utils/constants/routes/protected.route';
-import { type CacheService } from '@/utils/services/common.service';
+import { type CacheService } from '@/utils/service';
 import { successR } from '@/results/successR/successR.result';
 import { unexpectedER } from '@/results/errorR/unexpectedER.result';
 

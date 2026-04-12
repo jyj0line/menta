@@ -1,4 +1,4 @@
-import { ValuesFromObject } from "@/utils/types/util.type";
+import { ValuesFromObject } from "@/utils/type";
 
 export const SP_KEYS = {
     NEXT: 'next'

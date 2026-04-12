@@ -3,10 +3,10 @@ import { ReactElement } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/i18n/messages/en.json';
-import { routing } from '@/i18n/routing';
+import { routingConfig } from '@/i18n/routing.cnfg';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <NextIntlClientProvider locale={routing.defaultLocale} messages={messages}>
+  <NextIntlClientProvider locale={routingConfig.defaultLocale} messages={messages}>
     {children}
   </NextIntlClientProvider>
 );

@@ -1,10 +1,10 @@
 import { type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
-import { routing } from '@/i18n/routing';
-import { updateSupabaseSessionProxy } from '@/libs/supabase/proxy';
+import { routingConfig } from '@/i18n/routing.cnfg';
+import { updateSupabaseSessionProxy } from '@/libs/supabase/sessionProxy';
 
-const nextintlProxy = createMiddleware(routing);
+const nextintlProxy = createMiddleware(routingConfig);
 
 export async function proxy(request: NextRequest) {
   const response = nextintlProxy(request);

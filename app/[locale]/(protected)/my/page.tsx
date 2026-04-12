@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const MyPage = () => {
   return (
-    <main className='flex flex-col items-center min-h-full p-page'>
+    <main className='flex flex-col items-center min-h-full p-page-p16'>
     </main>
   )
 }

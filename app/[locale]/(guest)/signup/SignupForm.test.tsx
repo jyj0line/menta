@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { renderWithNextintl } from '@/tests/rtl/utils/helper';
-import { createMockFormData } from '@/tests/utils/mock';
+import { renderWithNextintl } from '@/tests/rtl/rtl.helper';
+import { createMockFormData } from '@/tests/helper.mock';
 
 import { SignUpForm } from '@/app/[locale]/(guest)/signup/SignupForm';
 import { signupAction } from '@/features/auth/auth.action';

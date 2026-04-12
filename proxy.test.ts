@@ -1,10 +1,10 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { createMockRequest } from '@/tests/utils/mock';
+import { createMockRequest } from '@/tests/helper.mock';
 
 import { proxy } from '@/proxy';
 
 import { NextResponse } from 'next/server';
-import { updateSupabaseSessionProxy } from '@/libs/supabase/proxy';
+import { updateSupabaseSessionProxy } from '@/libs/supabase/sessionProxy';
 import { PROTECTED_ROUTES } from '@/utils/constants/routes/protected.route';
 import { ORIGINS } from '@/utils/constants/routes/public.route';
 

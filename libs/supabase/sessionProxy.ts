@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
-import { sharedEnvs } from '@/getEnvs/getSharedEnvs';
-import { type Database } from '@/libs/supabase/types/supabase.type';
+import { sharedEnv } from '@/getEnv/getSharedEnv';
+import { type Database } from '@/libs/supabase/supabase.type';
 import {
   isGuestPathname, isProtectedPathname,
   createLoginUrl, createRootUrl
-} from '@/utils/helpers/route.helper';
+} from '@/utils/helper.route';
 
 export const updateSupabaseSessionProxy = async (
   request: NextRequest,
@@ -15,8 +15,8 @@ export const updateSupabaseSessionProxy = async (
   // With Fluid compute, don't put this client in a global environment variable.
   // Always create a new one on each request.
   const supabaseServerClient = createServerClient<Database>(
-    sharedEnvs.NEXT_PUBLIC_SUPABASE_API_PROJECT_URL,
-    sharedEnvs.NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE,
+    sharedEnv.NEXT_PUBLIC_SUPABASE_API_PROJECT_URL,
+    sharedEnv.NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE,
     {
       cookies: {
         getAll() {

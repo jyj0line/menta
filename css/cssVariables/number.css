@@ -1,0 +1,21 @@
+:root {
+    /* CSS variables not mapped to Tailwind theme varidable namespace- */
+    /* breakpoint css variables must go with breakpoint theme variable namespace for readability- */
+    --breakpoint-600: 600px;
+    --breakpoint-780: 780px;
+    --breakpoint-960: 960px;
+    /* -breakpoint css variables must go with breakpoint theme variable namespace for readability */
+    
+    --lne-2: 0.1rem;
+    --lne-10: 0.5rem;
+    /* -CSS variables not mapped to Tailwind theme varidable namespace */
+
+    --spacing-4: 0.25rem;
+    --spacing-8: 0.5rem;
+    --spacing-16: 1rem;
+    --spacing-40: 2.5rem;
+    --spacing-48: 3rem;
+    --spacing-80: 5rem;
+
+    --radius-4: 0.25rem;
+}

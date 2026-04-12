@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { KEYS, type Type, type Result } from "@/results/result.result";
+import { KEYS, type Type, type Result } from "@/results/result";
 import { ERROR_TYPES, type ErrorR, errorR, isErrorR } from "@/results/errorR/errorR.result";
 
 import { type SuccessR, successR } from '@/results/successR/successR.result';

@@ -1,0 +1,23 @@
+@theme inline static {
+    /* breakpoint css variables must go with breakpoint theme variables for readability- */
+    --breakpoint-w-600: 600px;
+    --breakpoint-w-780: 780px;
+    --breakpoint-w-960: 960px;
+    /* -breakpoint css variables must go with breakpoint theme variables for readability*/
+
+    --spacing-page-p16: var(--spacing-16);
+
+    --spacing-clk-p16: var(--spacing-16);
+
+    --spacing-crack-mt4: var(--spacing-4);
+    --spacing-crack-mt80: var(--spacing-80);
+
+    --spacing-inp-pl8: var(--spacing-8);
+    --spacing-inp-h40: var(--spacing-40);
+
+    --spacing-all-p25%: 25%;
+
+    --radius--inp-r4: var(--radius-4);
+    
+    --radius-all-r9999px: 9999px;
+}

@@ -1,9 +1,8 @@
-name: Supabase Validation
+name: Develop Supabase Validation
 
 on:
   pull_request:
     branches:
-      - main
       - develop
   workflow_dispatch:
 
@@ -13,10 +12,10 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: supabase validation (local db lint, test, type-check)
+  # Job 1: supabase check (local db lint, test, type-check)
   # ─────────────────────────────────────────────────────
-  supabase-validation:
-    name: supabase validation (local db lint, test, type-check)
+  supabase-check:
+    name: supabase check (local db lint, test, type-check)
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -47,7 +46,7 @@ jobs:
       - name: Verify generated types are checked in
         run: |
           npm run supabase:type
-          if ! git diff --ignore-space-at-eol --exit-code --quiet supabase/type.ts; then
+          if ! git diff --ignore-space-at-eol --exit-code --quiet libs/supabase/supabase.type.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
             exit 1
@@ -58,15 +57,17 @@ jobs:
   # ─────────────────────────────────────────────────────
   supabase-migration-dryrun:
     name: supabase migration dry run (from local db to remote db)
-    needs: supabase-validation
+    needs: supabase-check
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    if: github.base_name == 'main' || github.base_name == 'develop'
-    environment: ${{ github.ref_name == 'main' && 'menta-main-environment' || 'menta-develop-environment' }}
+    if: |
+      (github.event_name == 'pull_request' && github.base_ref == 'develop') ||
+      (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
+    environment: menta-develop-environment
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.DEVELOP_SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.DEVELOP_SUPABASE_PROJECT_ID }}
 
     steps:
       # ── Setup CI environment ───────────────────────────────────────

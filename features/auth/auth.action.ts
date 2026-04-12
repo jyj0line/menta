@@ -6,12 +6,12 @@ import {
   type LoginUsecaseR, loginUsecase
 } from '@/features/auth/auth.usecase';
 
-import { createSupabaseServerClient } from '@/libs/supabase/server';
+import { createSupabaseServerClient } from '@/libs/supabase/serverClient';
 
 import { unexpectedER } from '@/results/errorR/unexpectedER.result';
 
-import { logging } from '@/utils/loggings/logging';
-import { NextjsCacheService } from '@/utils/services/common.service';
+import { logging } from '@/utils/logging';
+import { NextjsCacheService } from '@/utils/service';
 
 export type SignupActionState = SignupUsecaseR | undefined;
 export const signupAction = async (

@@ -1,14 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { NextjsCacheService, NextjsRedirectService } from '@/utils/services/common.service';
+import { NextjsCacheService, NextjsRedirectService } from '@/utils/service';
 
 import { revalidatePath as nextjsRevalidatePath } from 'next/cache';
 import { redirect as nextjsRedirect } from 'next/navigation';
-import * as routeHelperModule from '@/utils/helpers/route.helper';
+import * as routeHelperModule from '@/utils/helper.route';
 
 const spyOnGetSafePathname = vi.spyOn(routeHelperModule, 'getSafePathname');
 
-describe('@/utils/services/common.service.ts', () => {
+describe('@/utils/service.ts', () => {
   describe('NextjsCacheService', () => {
     it('sanitizes the path with getSafePathname() before calling revalidatePath()', () => {
       const cacheService = new NextjsCacheService();

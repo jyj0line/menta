@@ -1,4 +1,4 @@
-import { KEYS, type Type, type Result } from "@/results/result.result";
+import { KEYS, type Type, type Result } from "@/results/result";
 import { ERROR_TYPES, type ErrorR, errorR, isErrorR } from "@/results/errorR/errorR.result";
 
 // result > error > unexpected
