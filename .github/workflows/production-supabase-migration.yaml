@@ -5,16 +5,58 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: supabase migration (from local db to remote db)
+  # Job 1: production supabase check (local db lint, test, type-check)
   # ─────────────────────────────────────────────────────
-  supabase-migration:
-    name: supabase migration (from local db to remote db)
+  production-supabase-check:
+    name: production supabase check (local db lint, test, type-check)
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    steps:
+      # ── Setup CI environment ───────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+
+      - name: Setup and Cache Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Local DB Validation ─────────────────────────────────
+      - name: Start local DB
+        run: npm run supabase:dbstart
+
+      - name: Lint DB
+        run: npm run supabase:lint
+
+      - name: Test DB
+        run: npm run supabase:test
+
+      - name: Verify generated types are checked in
+        run: |
+          npm run supabase:type
+          if ! git diff --ignore-space-at-eol --exit-code --quiet libs/supabase/supabase.type.ts; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff
+            exit 1
+          fi
+
+  # ─────────────────────────────────────────────────────
+  # Job 2: production supabase migration(from local db to remote db)
+  # ─────────────────────────────────────────────────────
+  production-supabase-migration:
+    name: production supabase migration(from local db to remote db)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: production-supabase-check
     if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
     environment: menta-production-environment
     env:
@@ -37,15 +79,8 @@ jobs:
         run: npm ci
 
       # ── Remote Production DB Migration ───────────────────────────
-      - name: link supabase remote production project
+      - name: link production supabase remote project
         run: npm run supabase:link
 
-      - name: production db migration
+      - name: production db Migration
         run: npm run supabase:push
-
-      - name: upload production db migration report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4
-        with:
-          name: production-migration-report
-          path: production-migration-report/
-          retention-days: 30

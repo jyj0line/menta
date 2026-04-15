@@ -9,10 +9,10 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: supabase check (local db lint, test, type-check)
+  # Job 1: develop supabase check (local db lint, test, type-check)
   # ─────────────────────────────────────────────────────
-  supabase-check:
-    name: supabase check (local db lint, test, type-check)
+  develop-supabase-check-fordryrun:
+    name: develop supabase check (local db lint, test, type-check)
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -50,18 +50,18 @@ jobs:
           fi
 
   # ─────────────────────────────────────────────────────
-  # Job 2: supabase migration dry run (from local db to remote db)
+  # Job 2: develop supabase migration dry run (from local db to remote db)
   # ─────────────────────────────────────────────────────
-  supabase-migration-dryrun:
-    name: supabase migration dry run (from local db to remote db)
+  develop-supabase-migration-dryrun:
+    name: develop supabase migration dry run (from local db to remote db)
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: supabase-check
+    needs: develop-supabase-check-fordryrun
     if: github.event_name == 'workflow_dispatch' && github.ref_name == 'develop'
     environment: menta-develop-environment
     env:
-      DEVELOP_SUPABASE_DATABASE_PASSWORD: ${{ secrets.DEVELOP_SUPABASE_DATABASE_PASSWORD }}
-      DEVELOP_SUPABASE_PROJECT_ID: ${{ secrets.DEVELOP_SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.DEVELOP_SUPABASE_DATABASE_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.DEVELOP_SUPABASE_PROJECT_ID }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
     steps:
@@ -84,10 +84,3 @@ jobs:
 
       - name: develop db migration dry-run
         run: npm run supabase:push--dr
-
-      - name: upload develop db migration dry-run report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4
-        with:
-          name: develop-migration-dr-report
-          path: develop-migration-dr-report/
-          retention-days: 30
