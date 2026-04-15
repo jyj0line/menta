@@ -14,14 +14,14 @@ const mockNextintlResponse = new NextResponse(null, { status: 200 });
 const mockFinalResponse = new NextResponse(null, { status: 200 });
 
 vi.mock('next-intl/middleware', () => ({
-  default: vi.fn(() => mockCreateMiddleware),
+  default: vi.fn(() => mockCreateMiddleware)
 }));
 
-vi.mock('@/libs/supabase/proxy', () => ({
-  updateSupabaseSessionProxy: vi.fn(),
+vi.mock('@/libs/supabase/sessionProxy', () => ({
+  updateSupabaseSessionProxy: vi.fn()
 }));
 
-describe('proxy', () => {
+describe('proxy.ts', () => {
   beforeEach(() => {
     mockCreateMiddleware.mockReturnValue(mockNextintlResponse);
     vi.mocked(updateSupabaseSessionProxy).mockResolvedValue(mockFinalResponse);

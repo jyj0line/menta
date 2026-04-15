@@ -43,9 +43,9 @@ jobs:
   # ─────────────────────────────────────────────────────
   unit-integration-test:
     name: unit & integration test (vitest + rtl)
-    needs: eslint-i18ncheck-test
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    needs: eslint-i18ncheck-test
     steps:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
@@ -71,7 +71,7 @@ jobs:
       - name: Run Vitest
         run: npm run vitest--cvr
 
-      - name: Upload coverage report
+      - name: Upload Vitest report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4
         with:
@@ -84,9 +84,9 @@ jobs:
   # ─────────────────────────────────────────────────────
   e2e-test:
     name: e2e test (playwright)
-    needs: unit-integration-test
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    needs: unit-integration-test
     env:
       NEXT_PUBLIC_NEXTJS_ORIGIN: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_API_PROJECT_URL: http://127.0.0.1:54321
