@@ -4,7 +4,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 import "@/css/globals.css";
-import { routingConfig } from '@/i18n/routing.cnfg';
+import { routing } from '@/i18n/routing';
 import { ORIGINS } from '@/utils/constants/routes/public.route';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,7 +29,7 @@ export default async function GlobalLayout({
 }: Readonly<Props>) {
   // IMPORTANT: ensure that the incoming `locale` is valid
   const { locale } = await params;
-  if (!hasLocale(routingConfig.locales, locale)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 

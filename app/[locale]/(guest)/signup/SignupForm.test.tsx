@@ -20,8 +20,6 @@ vi.mock('@/features/auth/auth.action', () => ({
 }));
 
 describe('SignUpForm', () => {
-  const metadataMessages = messages.metadata;
-
   const formMessages = messages.auth.component.signup.form;
   const successMessages = messages.auth.component.signup.success;
   

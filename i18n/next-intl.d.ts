@@ -1,10 +1,10 @@
-import { formats } from '@/i18n/request.cnfg';
-import { routingConfig } from '@/i18n/routing.cnfg';
+import { formats } from '@/i18n/request';
+import { routing } from '@/i18n/routing';
 import messages from '@/i18n/messages/en.json';
 
 declare module 'next-intl' {
   interface AppConfig {
-    Locale: (typeof routingConfig.locales)[number];
+    Locale: (typeof routing.locales)[number];
     Messages: typeof messages;
     Formats: typeof formats;
   }
