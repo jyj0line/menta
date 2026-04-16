@@ -1,4 +1,4 @@
-name: Develop Supabase Validation
+name: Develop Supabase Migration Dryrun
 
 on:
   workflow_dispatch:
@@ -9,10 +9,10 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: develop supabase check (local db lint, test, type-check)
+  # Job 1: develop supabase check fordryrun(local db lint, test, type-check)
   # ─────────────────────────────────────────────────────
   develop-supabase-check-fordryrun:
-    name: develop supabase check (local db lint, test, type-check)
+    name: develop supabase check fordryrun
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -50,10 +50,10 @@ jobs:
           fi
 
   # ─────────────────────────────────────────────────────
-  # Job 2: develop supabase migration dry run (from local db to remote db)
+  # Job 2: develop supabase migration dryrun
   # ─────────────────────────────────────────────────────
   develop-supabase-migration-dryrun:
-    name: develop supabase migration dry run (from local db to remote db)
+    name: develop supabase migration dryrun
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: develop-supabase-check-fordryrun
