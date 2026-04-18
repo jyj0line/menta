@@ -1,6 +1,9 @@
 name: Develop Supabase Migration Dryrun
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 concurrency:
@@ -57,7 +60,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: develop-supabase-check-fordryrun
-    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'develop'
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'develop')
+      || (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
     environment: menta-develop-environment
     env:
       SUPABASE_DB_PASSWORD: ${{ secrets.DEVELOP_SUPABASE_DATABASE_PASSWORD }}

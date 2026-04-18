@@ -1,0 +1,19 @@
+@theme inline static {
+    --color-bg-dft: var(--color-neutral-50);
+
+    --color-lne-sub: var(--color-neutral-500);
+    --color-lne-dng: var(--color-red-700);
+    
+    --color-txt-dft: var(--color-neutral-950);
+    --color-txt-sub: var(--color-neutral-500);
+    --color-txt-dng: var(--color-red-700);
+    
+    --color-clk-dft: var(--color-neutral-950);
+    --color-clk-dfu: var(--color-neutral-50);
+    --color-clk-dsb: var(--color-neutral-500);
+
+    --color-clktxt-dft: var(--color-neutral-50);
+    --color-clktxt-dtu: var(--color-neutral-950);
+
+    --color-svg-dft: var(--color-neutral-500);
+}

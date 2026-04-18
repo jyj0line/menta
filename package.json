@@ -1,27 +1,75 @@
 {
-  "name": "menta",
+  "name": "Menta",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev--tp": "next dev --turbopack",
+    "build--tp": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+
+    "eslint": "eslint",
+    "eslint--qt": "eslint --quiet",
+
+    "i18ncheck": "i18n-check --source en --locales i18n/messages/",
+
+    "vitest--cvr": "vitest run --coverage",
+
+    "playwright:deps": "npx playwright install --with-deps",
+    "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
+    "playwright": "playwright test",
+    "playwright--ui": "playwright test --ui",
+
+    "supabase:dbstart": "supabase db start",
+    "supabase:lint": "supabase db lint",
+    "supabase:test": "supabase db test",
+    "supabase:type": "supabase gen types typescript --local > libs/supabase/supabase.type.ts",
+    "supabase:reset": "supabase db reset",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+
+    "supabase:link": "supabase link --project-ref $SUPABASE_PROJECT_ID",
+    "supabase:push": "supabase db push",
+    "supabase:push--dr": "supabase db push --dry-run"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.58.0",
+    "dotenv": "^17.3.1",
+    "next": "^16.0.10",
+    "next-intl": "^4.8.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "server-only": "^0.0.1",
+    "wait-on": "^9.0.4",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@eslint/eslintrc": "^3",
+    "@lingual/i18n-check": "^0.9.3",
+    "@playwright/test": "^1.56.1",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^20",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "global-jsdom": "^27.0.0",
+    "jsdom": "^27.4.0",
+    "supabase": "^2.84.5",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.16"
+  },
+  "overrides": {
+    "brace-expansion": "^5.0.5"
   }
 }

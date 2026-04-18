@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@import "./reset.css";
+
+@import "./cssVariables/color.css";
+@import "./cssVariables/number.css";
+
+@import "./themeVariables/color.css";
+@import "./themeVariables/number.css";
+
+@import "./utilities/txt.css";

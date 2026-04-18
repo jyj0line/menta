@@ -1,6 +1,9 @@
 name: Production Supabase Migration Dryrun
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -57,7 +60,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: production-supabase-check-fordryrun
-    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'main')
+      || (github.event_name == 'workflow_dispatch' && github.ref_name == 'main')
     environment: menta-production-environment
     env:
       SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_SUPABASE_DATABASE_PASSWORD }}

@@ -1,0 +1,296 @@
+"use client";
+
+import { useState, useActionState, useEffect } from 'react';
+import * as z from 'zod';
+import { useTranslations } from 'next-intl';
+
+import { signupAction } from '@/features/auth/auth.action';
+import { FIELDS } from '@/features/auth/constants/auth.field';
+import { type SignupFormData, signupFormDataSchema } from '@/features/auth/auth.schema';;
+import { LENGTHS } from '@/features/auth/constants/auth.length';
+import {
+    type EmailErrorCode, EMAIL_ERROR_CODES,
+    type PasswordErrorCode, PASSWORD_ERROR_CODES,
+    type PasswordConfirmationErrorCode, PASSWORD_CONFIRMAITON_ERROR_CODES
+} from '@/features/auth/results/auth.validationER.result';
+
+import { Candy } from '@/components/atoms/Candy';
+import { Button, Toggle } from '@/components/atoms/Click';
+import { Input } from '@/components/atoms/Input';
+import { VisibilityOnSVG, VisibilityOffSVG } from '@/components/svgs/svgs';
+
+import { KEYS } from '@/results/result';
+import { isSuccessR } from '@/results/successR/successR.result';
+import { isUnexpectedER } from '@/results/errorR/unexpectedER.result';
+import { type FieldErrorCodes, isValidationER } from '@/results/errorR/validationER.result';
+import { INPUT } from "@/utils/constants/length";
+
+const INPUT_CONTAINER_BASE_CN = 'flex flex-row items-center h-inp-h40 pl-inp-pl8 rounded--inp-r4 border border-(--lne-2) focus-within:outline focus-within:outline-(--lne-2)';
+const INPUT_CONTAINER_DEFAULT_CN = 'border-lne-sub focus-within:outline-lne-sub';
+const INPUT_CONTAINER_ERROR_CN = 'border-lne-dng focus-within:outline-lne-dng';
+
+const INPUT_CN = 'grow-1 h-full placeholder:text-txt-sub';
+
+const DESC_BASE_CN = 'ut-txt-sub';
+const DESC_DEFAULT_CN = 'text-txt-sub';
+const DESC_ERROR_CN = 'text-txt-dng';
+
+const VISIBILITY_SVG_CN = 'w-auto h-full p-all-p25% aspect-auto fill-svg-dft';
+const VisibilitySVG = ({ isShown}: { isShown: boolean }) => (
+    isShown ? 
+    <VisibilityOnSVG className={VISIBILITY_SVG_CN} />
+    : <VisibilityOffSVG className={VISIBILITY_SVG_CN} />
+);
+
+const FILED_ERROR_CODE_POSTFIX = ' message';
+type FieldErrorMessagesPProps = {
+    idPrefix: string;
+    errorMessages: Record<string, string>;
+    errorCodes?: string[];
+};
+const FieldErrorCodesP = ({
+    idPrefix,
+    errorMessages,
+    errorCodes
+}: FieldErrorMessagesPProps) => (
+    <div id={`${idPrefix}${FILED_ERROR_CODE_POSTFIX}`} className='flex flex-col'>
+        {Object.entries(errorMessages).map(([key, desc]) => {
+            const isInErrorCodes = errorCodes?.includes(key);
+            return (
+                <p
+                    key={key}
+                    className={`${DESC_BASE_CN} ${isInErrorCodes ? DESC_ERROR_CN : DESC_DEFAULT_CN}`}
+                >
+                    - {desc}
+                </p>
+            );
+        })}
+    </div>
+);
+
+type SignUpFormProps = {
+    next: string;
+    className?: string;
+};
+export const SignUpForm = ({ next, className }: SignUpFormProps) => {
+    const [signupState, formAction, isPending] = useActionState(
+        signupAction.bind(null, next),
+        undefined
+    );
+    
+    // field values
+    const [formData, setFormData] = useState<SignupFormData>({
+        [FIELDS.EMAIL]: '',
+        [FIELDS.PASSWORD]: '',
+        [FIELDS.PASSWORD_CONFIRMATION]: ''
+    });
+
+    // field error codes(validationER)
+    const [fieldErrorCodes, setFieldErrorCodes] = useState<FieldErrorCodes<SignupFormData>>({});
+
+    // password visibilities
+    const [isPasswordShown, setIsPasswordShown] = useState<boolean>(false);
+    const [isPasswordConfirmationShown, setIsPasswordConfirmationShown] = useState<boolean>(false);
+
+    // handling signupState
+    useEffect(() => {
+        if (signupState === undefined) {
+        } else if (isSuccessR(signupState)) {
+            setFieldErrorCodes({});
+        } else if (isValidationER<SignupFormData>(signupState)) {
+            setFieldErrorCodes(signupState[KEYS.FIELD_ERROR_CODES]);
+        } else if (isUnexpectedER(signupState)) {
+            // todo
+        } 
+    }, [signupState]);
+
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name: field, value } = e.target;
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleFieldBlur = (field: keyof SignupFormData) => {
+        const res = signupFormDataSchema.safeParse(formData);
+        const newFieldErrorCodes = res.success ? {} : z.flattenError(res.error).fieldErrors;
+
+        setFieldErrorCodes(prev => {
+            const next = {
+                ...prev,
+                [field]: newFieldErrorCodes[field]
+            };
+
+            if (field === FIELDS.PASSWORD && formData[FIELDS.PASSWORD_CONFIRMATION]) {
+                next[FIELDS.PASSWORD_CONFIRMATION] = newFieldErrorCodes[FIELDS.PASSWORD_CONFIRMATION];
+            }
+
+            return next;
+        });
+    };
+
+
+
+    const hasEmailError = (fieldErrorCodes[FIELDS.EMAIL]?.length ?? 0) > 0;
+    const hasPasswordError = (fieldErrorCodes[FIELDS.PASSWORD]?.length ?? 0) > 0;
+    const hasPasswordConfirmationError = (fieldErrorCodes[FIELDS.PASSWORD_CONFIRMATION]?.length ?? 0) > 0;
+
+    const isAllFieldsFilled = formData[FIELDS.EMAIL] && formData[FIELDS.PASSWORD] && formData[FIELDS.PASSWORD_CONFIRMATION];
+    const canSubmit = isAllFieldsFilled
+        && !hasEmailError && !hasPasswordError && !hasPasswordConfirmationError
+        && !isPending;
+
+
+        
+    const formT = useTranslations('auth.component.signup.form');
+    const successT = useTranslations('auth.component.signup.success');
+
+    const emailT = useTranslations('auth.result.fieldErrorCodeMessages.email');
+    const emailTs: Record<EmailErrorCode, string> = {
+        [EMAIL_ERROR_CODES.INVALID_FORMAT]: emailT(EMAIL_ERROR_CODES.INVALID_FORMAT),
+    }
+
+    const pwT = useTranslations('auth.result.fieldErrorCodeMessages.password')
+    const pwTs: Record<PasswordErrorCode, string> = {
+        [PASSWORD_ERROR_CODES.TOO_SHORT]: pwT(PASSWORD_ERROR_CODES.TOO_SHORT, { min: LENGTHS.PASSWORD_MIN.toString() }),
+        [PASSWORD_ERROR_CODES.TOO_LONG]: pwT(PASSWORD_ERROR_CODES.TOO_LONG, { max: LENGTHS.PASSWORD_MAX.toString() }),
+        [PASSWORD_ERROR_CODES.MISSING_LOWERCASE]: pwT(PASSWORD_ERROR_CODES.MISSING_LOWERCASE),
+        [PASSWORD_ERROR_CODES.MISSING_UPPERCASE]: pwT(PASSWORD_ERROR_CODES.MISSING_UPPERCASE),
+        [PASSWORD_ERROR_CODES.MISSING_NUMBER]: pwT(PASSWORD_ERROR_CODES.MISSING_NUMBER),
+        [PASSWORD_ERROR_CODES.MISSING_SPECIAL_CHAR]: pwT(PASSWORD_ERROR_CODES.MISSING_SPECIAL_CHAR),
+    }
+
+    const pwcT = useTranslations('auth.result.fieldErrorCodeMessages.password_confirmation');
+    const pwcTs: Record<PasswordConfirmationErrorCode, string> = {
+        [PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH]: pwcT(PASSWORD_CONFIRMAITON_ERROR_CODES.MISMATCH),
+    }
+
+    if (signupState !== undefined && isSuccessR(signupState)) {
+        return (
+            <Candy
+                title={successT('candy.title')}
+                warning={successT('candy.warning')}
+                details={successT('candy.details', { email: formData[FIELDS.EMAIL] })}
+                className={`border-lne-sub ${className}`}
+            />
+        );
+    }
+
+    return (
+        <form action={formAction} className={`flex flex-col ${className}`}>
+            {/* email field */}
+            <div className='flex flex-col'>
+                <label htmlFor={FIELDS.EMAIL}>
+                    {formT('emailLabel')}
+                </label>
+
+                <div className={`${INPUT_CONTAINER_BASE_CN}
+                    ${hasEmailError ? INPUT_CONTAINER_ERROR_CN : INPUT_CONTAINER_DEFAULT_CN}`}
+                >
+                    <Input
+                        idName={FIELDS.EMAIL}
+                        ariaDescribedby={`${FIELDS.EMAIL}${FILED_ERROR_CODE_POSTFIX}`}
+                        type="email"
+                        placeholder={formT('emailPlaceholder')}
+                        maxLength={INPUT.MAX}
+                        value={formData[FIELDS.EMAIL]}
+                        onChange={handleFieldChange}
+                        onBlur={() => handleFieldBlur(FIELDS.EMAIL)}
+                        className={INPUT_CN}
+                    />
+                </div>
+
+                <FieldErrorCodesP
+                    idPrefix={FIELDS.EMAIL}
+                    errorMessages={emailTs}
+                    errorCodes={fieldErrorCodes[FIELDS.EMAIL]}
+                />
+            </div>
+            
+            {/* password field */}
+            <div className='flex flex-col mt-(--spacing-48)'>
+                <label htmlFor={FIELDS.PASSWORD}>
+                    {formT('passwordLabel')}
+                </label>
+
+                <div className={`${INPUT_CONTAINER_BASE_CN}
+                    ${hasPasswordError ? INPUT_CONTAINER_ERROR_CN : INPUT_CONTAINER_DEFAULT_CN}`}
+                >
+                    <Input
+                        idName={FIELDS.PASSWORD}
+                        ariaDescribedby={`${FIELDS.PASSWORD}${FILED_ERROR_CODE_POSTFIX}`}
+                        type={isPasswordShown ? "text" : "password"}
+                        placeholder={formT('passwordPlaceholder')}
+                        maxLength={LENGTHS.PASSWORD_MAX}
+                        value={formData[FIELDS.PASSWORD]}
+                        onChange={handleFieldChange}
+                        onBlur={() => handleFieldBlur(FIELDS.PASSWORD)}
+                        className={INPUT_CN}
+                    />
+
+                    <Toggle
+                        ariaLabel={formT('showPasswordAriaLabel')}
+                        ariaPressed={isPasswordShown}
+                        tabIndex={-1}
+                        onClick={ () => { setIsPasswordShown(prev => !prev) }}
+                        className='h-full'
+                    >
+                        {VisibilitySVG({ isShown: isPasswordShown })}
+                    </Toggle>
+                </div>
+
+                <FieldErrorCodesP
+                    idPrefix={FIELDS.PASSWORD}
+                    errorMessages={pwTs}
+                    errorCodes={fieldErrorCodes[FIELDS.PASSWORD]}
+                />
+            </div>
+            
+            {/* password confirmation field */}
+            <div className='flex flex-col mt-(--spacing-48)'>
+                <label htmlFor={FIELDS.PASSWORD_CONFIRMATION}>
+                    {formT('passwordConfirmationLabel')}
+                </label>
+
+                <div className={`${INPUT_CONTAINER_BASE_CN}
+                    ${hasPasswordConfirmationError ? INPUT_CONTAINER_ERROR_CN : INPUT_CONTAINER_DEFAULT_CN}`}
+                >
+                    <Input
+                        idName={FIELDS.PASSWORD_CONFIRMATION}
+                        ariaDescribedby={`${FIELDS.PASSWORD_CONFIRMATION}${FILED_ERROR_CODE_POSTFIX}`}
+                        type={isPasswordConfirmationShown ? "text": "password"}
+                        placeholder={formT('passwordConfirmationPlaceholder')}
+                        maxLength={LENGTHS.PASSWORD_MAX}
+                        value={formData[FIELDS.PASSWORD_CONFIRMATION]}
+                        onChange={handleFieldChange}
+                        onBlur={() => handleFieldBlur(FIELDS.PASSWORD_CONFIRMATION)}
+                        className={INPUT_CN}
+                    />
+
+                    <Toggle
+                        ariaLabel={formT('showPasswordConfirmationAriaLabel')}
+                        ariaPressed={isPasswordConfirmationShown}
+                        tabIndex={-1}
+                        onClick={() => { setIsPasswordConfirmationShown(prev => !prev) }}
+                        className='h-full'
+                    >
+                        {VisibilitySVG({ isShown: isPasswordConfirmationShown })}
+                    </Toggle>
+                </div>
+
+                <FieldErrorCodesP
+                    idPrefix={FIELDS.PASSWORD_CONFIRMATION}
+                    errorMessages={pwcTs}
+                    errorCodes={fieldErrorCodes[FIELDS.PASSWORD_CONFIRMATION]}
+                />
+            </div>
+
+            {/* sign up button */}
+            <Button
+                type="submit"
+                label={formT('signupButtonLabel')}
+                disabled={!canSubmit}
+                tabIndex={-1}
+                className='mt-crack-mt80'
+            />
+        </form>
+    );
+}

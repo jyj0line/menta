@@ -18,8 +18,9 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+
+      "playwright-report/**"
     ],
   },
 ];
-
 export default eslintConfig;
