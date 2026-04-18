@@ -1,9 +1,9 @@
-import { KEYS, type Type, type Result } from "@/results/result.result";
+import { KEYS, type Type, type Result } from "@/results/result";
 import { ERROR_TYPES, type ErrorR, errorR, isErrorR } from "@/results/errorR/errorR.result";
 
 import { SUPABASE_ERROR_CODES } from "@/libs/supabase/results/supabase.result";
 
-import { type ValuesFromObject } from '@/utils/types/util.type';
+import { type ValuesFromObject } from '@/utils/type';
 
 // result > error > login
 

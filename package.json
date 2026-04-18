@@ -22,7 +22,7 @@
     "supabase:dbstart": "supabase db start",
     "supabase:lint": "supabase db lint",
     "supabase:test": "supabase db test",
-    "supabase:type": "supabase gen types typescript --local > supabase/type.ts",
+    "supabase:type": "supabase gen types typescript --local > libs/supabase/supabase.type.ts",
     "supabase:reset": "supabase db reset",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",

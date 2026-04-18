@@ -3,15 +3,15 @@ import { isAuthApiError } from '@supabase/supabase-js';
 import { LOGIN_ERROR_CODES, type LoginER, loginER } from '@/features/auth/results/auth.loginER.result';
 import { FIELDS } from '@/features/auth/constants/auth.field';
 
-import { createSupabaseServerClient as importedCreateSupabaseServerClient} from '@/libs/supabase/server';
+import { createSupabaseServerClient as importedCreateSupabaseServerClient} from '@/libs/supabase/serverClient';
 import { SUPABASE_ERROR_CODES } from '@/libs/supabase/results/supabase.result';
 
 import { type SuccessR, successR } from '@/results/successR/successR.result';
 import { type UnexpectedER, unexpectedER } from '@/results/errorR/unexpectedER.result';
 
 import { ORIGINS } from '@/utils/constants/routes/public.route';
-import { getSafePathname } from '@/utils/helpers/route.helper';
-import { logging } from '@/utils/loggings/logging';
+import { getSafePathname } from '@/utils/helper.route';
+import { logging } from '@/utils/logging';
 
 export type SignupServiceR = 
   SuccessR<Record<typeof FIELDS.EMAIL, string>>

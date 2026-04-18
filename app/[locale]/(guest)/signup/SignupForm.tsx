@@ -15,19 +15,19 @@ import {
 } from '@/features/auth/results/auth.validationER.result';
 
 import { Candy } from '@/components/atoms/Candy';
-import { Button, Toggle, Link } from '@/components/atoms/Click';
+import { Button, Toggle } from '@/components/atoms/Click';
 import { Input } from '@/components/atoms/Input';
 import { VisibilityOnSVG, VisibilityOffSVG } from '@/components/svgs/svgs';
 
-import { KEYS } from '@/results/result.result';
+import { KEYS } from '@/results/result';
 import { isSuccessR } from '@/results/successR/successR.result';
 import { isUnexpectedER } from '@/results/errorR/unexpectedER.result';
 import { type FieldErrorCodes, isValidationER } from '@/results/errorR/validationER.result';
 import { INPUT } from "@/utils/constants/length";
 
-const INPUT_CONTAINER_BASE_CN = 'flex flex-row items-center h-inp pl-inp-x rounded-inp border border-(--ln-click) focus-within:outline focus-within:outline-(--ln-click)';
-const INPUT_CONTAINER_DEFAULT_CN = 'border-ln-sub focus-within:outline-ln-sub';
-const INPUT_CONTAINER_ERROR_CN = 'border-ln-dng focus-within:outline-ln-dng';
+const INPUT_CONTAINER_BASE_CN = 'flex flex-row items-center h-inp-h40 pl-inp-pl8 rounded--inp-r4 border border-(--lne-2) focus-within:outline focus-within:outline-(--lne-2)';
+const INPUT_CONTAINER_DEFAULT_CN = 'border-lne-sub focus-within:outline-lne-sub';
+const INPUT_CONTAINER_ERROR_CN = 'border-lne-dng focus-within:outline-lne-dng';
 
 const INPUT_CN = 'grow-1 h-full placeholder:text-txt-sub';
 
@@ -35,7 +35,7 @@ const DESC_BASE_CN = 'ut-txt-sub';
 const DESC_DEFAULT_CN = 'text-txt-sub';
 const DESC_ERROR_CN = 'text-txt-dng';
 
-const VISIBILITY_SVG_CN = 'w-auto h-full p-quarter aspect-auto fill-svg-dft';
+const VISIBILITY_SVG_CN = 'w-auto h-full p-all-p25% aspect-auto fill-svg-dft';
 const VisibilitySVG = ({ isShown}: { isShown: boolean }) => (
     isShown ? 
     <VisibilityOnSVG className={VISIBILITY_SVG_CN} />
@@ -169,7 +169,7 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                 title={successT('candy.title')}
                 warning={successT('candy.warning')}
                 details={successT('candy.details', { email: formData[FIELDS.EMAIL] })}
-                className={`border-ln-sub ${className}`}
+                className={`border-lne-sub ${className}`}
             />
         );
     }
@@ -289,7 +289,7 @@ export const SignUpForm = ({ next, className }: SignUpFormProps) => {
                 label={formT('signupButtonLabel')}
                 disabled={!canSubmit}
                 tabIndex={-1}
-                className='mt-btn-sbm'
+                className='mt-crack-mt80'
             />
         </form>
     );

@@ -7,7 +7,7 @@ import {
   PUBLIC_ROUTES, type PublicRoutes, DEFAULT_PUBLIC_ROUTES
 } from '@/utils/constants/routes/public.route';
 import { SP_KEYS, type SpKey, type Sps } from '@/utils/constants/sp';
-import { ValuesFromObject } from '@/utils/types/util.type';
+import { ValuesFromObject } from '@/utils/type';
 
 const ROUTES = {
   ...GUEST_ROUTES,

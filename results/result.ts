@@ -1,4 +1,4 @@
-import { type ValuesFromObject } from "@/utils/types/util.type";
+import { type ValuesFromObject } from "@/utils/type";
 
 // result
 // result is a base type(does not create object.)

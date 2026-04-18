@@ -2,12 +2,12 @@ import NextjsLink from "next/link";
 import { useTranslations } from "next-intl";
 
 import { LogoSVG } from "@/components/svgs/svgs";
-import { getSafePathname } from "@/utils/helpers/route.helper";
+import { getSafePathname } from "@/utils/helper.route";
 
-const COMMON_CN = "border border-(length:--ln-click) p-btn rounded-btn cursor-pointer disabled:bg-btndsb-dft disabled:cursor-not-allowed";
-const BUTTON_CN = "bg-btn-dft text-btntxt-dft border-btntxt-dft";
+const COMMON_CN = "border border-(length:--lne-2) p-clk-p16 rounded-all-r9999px cursor-pointer disabled:bg-clk-dsb disabled:cursor-not-allowed";
+const BUTTON_CN = "bg-clk-dft text-clktxt-dft border-clktxt-dft";
 const TOGGLE_CN = "cursor-pointer";
-const LINK_CN = "bg-btn-lnk text-btntxt-lnk border-btntxt-lnk";
+const LINK_CN = "bg-clk-dfu text-clktxt-dtu border-clktxt-dtu";
 const LOGO_SVG_CN = 'w-auto aspect-auto h-full h-[2rem]';
 
 type ButtonProps = {

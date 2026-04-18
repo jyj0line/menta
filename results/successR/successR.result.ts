@@ -1,4 +1,4 @@
-import { KEYS, TYPES, type Type, type Result } from "@/results/result.result";
+import { KEYS, TYPES, type Type, type Result } from "@/results/result";
 
 // result > success
 

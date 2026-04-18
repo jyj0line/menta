@@ -1,17 +1,17 @@
 import { vi, describe, it, expect } from 'vitest';
-import { createMockRequest } from '@/tests/utils/mock';
+import { createMockRequest } from '@/tests/helper.mock';
 
-import { updateSupabaseSessionProxy } from '@/libs/supabase/proxy';
+import { updateSupabaseSessionProxy } from '@/libs/supabase/sessionProxy';
 
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
-import { type Database } from '@/libs/supabase/types/supabase.type';
+import { type Database } from '@/libs/supabase/supabase.type';
 import { GUEST_ROUTES } from '@/utils/constants/routes/guest.route';
 import { ORIGINS, PUBLIC_ROUTES } from '@/utils/constants/routes/public.route';
 import { PROTECTED_ROUTES } from '@/utils/constants/routes/protected.route';
-import { type DeepPartial } from '@/utils/types/util.type';
+import { type DeepPartial } from '@/utils/type';
 
-describe('utils/supabase/proxy.ts', () => {
+describe('libs/supabase/sessionProxy.ts', () => {
   describe('updateSupabaseSessionProxy', () => {
     type MockClaim = DeepPartial<Awaited<ReturnType<ReturnType<typeof createServerClient<Database>>['auth']['getClaims']>>>;
     const mockAuthenticatedClaim: MockClaim = {

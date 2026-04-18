@@ -1,10 +1,6 @@
-name: Supabase Validation
+name: Develop Supabase Migration
 
 on:
-  pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch:
 
 concurrency:
@@ -13,10 +9,10 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────────────
-  # Job 1: supabase validation (local db lint, test, type-check)
+  # Job 1: develop supabase check(local db lint, test, type-check)
   # ─────────────────────────────────────────────────────
-  supabase-validation:
-    name: supabase validation (local db lint, test, type-check)
+  develop-supabase-check:
+    name: develop supabase check
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -47,26 +43,26 @@ jobs:
       - name: Verify generated types are checked in
         run: |
           npm run supabase:type
-          if ! git diff --ignore-space-at-eol --exit-code --quiet supabase/type.ts; then
+          if ! git diff --ignore-space-at-eol --exit-code --quiet libs/supabase/supabase.type.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
             exit 1
           fi
 
   # ─────────────────────────────────────────────────────
-  # Job 2: supabase migration dry run (from local db to remote db)
+  # Job 2: develop supabase migration(from local db to remote db)
   # ─────────────────────────────────────────────────────
-  supabase-migration-dryrun:
-    name: supabase migration dry run (from local db to remote db)
-    needs: supabase-validation
+  develop-supabase-migration:
+    name: develop supabase migration
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    if: github.base_name == 'main' || github.base_name == 'develop'
-    environment: ${{ github.ref_name == 'main' && 'menta-main-environment' || 'menta-develop-environment' }}
+    needs: develop-supabase-check
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'develop'
+    environment: menta-develop-environment
     env:
+      PRODUCTION_SUPABASE_DATABASE_PASSWORD: ${{ secrets.PRODUCTION_SUPABASE_DATABASE_PASSWORD }}
+      PRODUCTION_SUPABASE_PROJECT_ID: ${{ secrets.PRODUCTION_SUPABASE_PROJECT_ID }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
 
     steps:
       # ── Setup CI environment ───────────────────────────────────────
@@ -82,9 +78,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ── Remote DB Migration Dry run ───────────────────────────
-      - name: Link Supabase remote project
+      # ── Remote Develop DB Migration ───────────────────────────
+      - name: link develop supabase remote project
         run: npm run supabase:link
 
-      - name: Dry-run DB migration
-        run: npm run supabase:push--dr
+      - name: develop db migration
+        run: npm run supabase:push

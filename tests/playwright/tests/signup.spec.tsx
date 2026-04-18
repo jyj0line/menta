@@ -5,8 +5,8 @@ import {
   assertDefined,
   createSpedUrl, pollUntil,
   KEYS
-} from '@/tests/utils/helper';
-import { TEST_APIS, MOCKS, createMockEmail } from '@/tests/utils/mock';
+} from '@/tests/helper';
+import { TEST_APIS, MOCKS, createMockEmail } from '@/tests/helper.mock';
 
 import { GUEST_ROUTES } from '@/utils/constants/routes/guest.route';
 import { ORIGINS, DEFAULT_PUBLIC_ROUTES } from '@/utils/constants/routes/public.route';

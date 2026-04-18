@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
 
-import { sharedEnvsSchema } from '@/getEnvs/getSharedEnvs.schema';
+import { sharedEnvSchema } from '@/getEnv/getSharedEnv.schema';
 
-import { MOCK_SHARED_ENVS } from '@/tests/vitest/setups/mockEnvs';
+import { MOCK_SHARED_ENVS } from '@/tests/vitest/setups/env.mock.setup';
 
-describe('@/getEnvs/getSharedEnvs.schema.ts', () => {
-  describe('sharedEnvsSchema', () => {
+describe('@/getEnvs/getSharedEnv.schema.ts', () => {
+  describe('sharedEnvSchema', () => {
     describe('valid: ', () => {
       it('passes.', async () => {
-        expect(sharedEnvsSchema.safeParse(MOCK_SHARED_ENVS).success).toBe(true);
+        expect(sharedEnvSchema.safeParse(MOCK_SHARED_ENVS).success).toBe(true);
       })
     })
 
@@ -54,7 +54,7 @@ describe('@/getEnvs/getSharedEnvs.schema.ts', () => {
           input: { ...MOCK_SHARED_ENVS, NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE: 'sb_publishable_' + 'a'.repeat(32) },
         },
       ])('fails when $case', ({ input: sharedEnvs }) => {
-        expect(sharedEnvsSchema.safeParse(sharedEnvs).success).toBe(false);
+        expect(sharedEnvSchema.safeParse(sharedEnvs).success).toBe(false);
       });
     });
   })

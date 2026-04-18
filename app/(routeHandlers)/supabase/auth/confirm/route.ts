@@ -2,12 +2,12 @@ import { type NextRequest } from 'next/server';
 import { type EmailOtpType as SupabaseEmailOtpType } from '@supabase/supabase-js';
 import * as z from 'zod';
 
-import { createSupabaseServerClient } from '@/libs/supabase/server';
+import { createSupabaseServerClient } from '@/libs/supabase/serverClient';
 import { PUBLIC_ROUTES, DEFAULT_PUBLIC_ROUTES } from '@/utils/constants/routes/public.route';
 import { SP_KEYS } from '@/utils/constants/sp';
-import { getSafePathname } from '@/utils/helpers/route.helper';
-import { logging } from '@/utils/loggings/logging';
-import { NextjsRedirectService } from '@/utils/services/common.service';
+import { getSafePathname } from '@/utils/helper.route';
+import { logging } from '@/utils/logging';
+import { NextjsRedirectService } from '@/utils/service';
 
 const emailOtpTypeSchema = z.enum(['signup', 'invite', 'magiclink', 'recovery', 'email_change', 'email']);
 

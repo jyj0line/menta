@@ -1,7 +1,7 @@
 import { revalidatePath as nextjsRevalidatePath } from 'next/cache';
 import { redirect as nextjsRedirect } from 'next/navigation';
 
-import { getSafePathname } from '@/utils/helpers/route.helper';
+import { getSafePathname } from '@/utils/helper.route';
 
 // cache service interface & implementaion-
 type RevalidatePathType = 'layout' | 'page';

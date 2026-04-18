@@ -2,15 +2,15 @@ import "server-only";
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
-import { sharedEnvs } from '@/getEnvs/getSharedEnvs';
-import { type Database } from '@/libs/supabase/types/supabase.type';
+import { sharedEnv } from '@/getEnv/getSharedEnv';
+import { type Database } from '@/libs/supabase/supabase.type';
 
 export const createSupabaseServerClient = async () => {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(
-    sharedEnvs.NEXT_PUBLIC_SUPABASE_API_PROJECT_URL,
-    sharedEnvs.NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE,
+    sharedEnv.NEXT_PUBLIC_SUPABASE_API_PROJECT_URL,
+    sharedEnv.NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE,
     {
       cookies: {
         getAll() {

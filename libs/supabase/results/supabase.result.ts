@@ -1,4 +1,4 @@
-import { type ValuesFromObject } from '@/utils/types/util.type';
+import { type ValuesFromObject } from '@/utils/type';
 
 // supabase defined error codes
 export const SUPABASE_ERROR_CODES = {

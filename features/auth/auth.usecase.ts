@@ -8,7 +8,7 @@ import { loginER, LOGIN_ERROR_CODES } from '@/features/auth/results/auth.loginER
 import { isSuccessR } from '@/results/successR/successR.result';
 import { type ValidationER, validateFormData } from '@/results/errorR/validationER.result';
 
-import { CacheService } from '@/utils/services/common.service';
+import { CacheService } from '@/utils/service';
 
 export type SignupUsecaseR =
   | ValidationER<SignupFormData>

@@ -1,5 +1,5 @@
 import { type SpKey } from "@/utils/constants/sp";
-import { type ValuesFromObject } from "@/utils/types/util.type";
+import { type ValuesFromObject } from "@/utils/type";
 
 // tesult-
 export const KEYS = {

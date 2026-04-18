@@ -2,10 +2,10 @@
 
 @import "./reset.css";
 
-@import "./cssVariables/colors.css";
-@import "./cssVariables/numbers.css";
+@import "./cssVariables/color.css";
+@import "./cssVariables/number.css";
 
-@import "./themeVariables/colors.css";
-@import "./themeVariables/numbers.css";
+@import "./themeVariables/color.css";
+@import "./themeVariables/number.css";
 
-@import "./utilities/txts.css";
+@import "./utilities/txt.css";

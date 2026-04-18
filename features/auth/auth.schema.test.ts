@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as z from 'zod';
-import { assertSafeParseSuccess, assertSafeParseError } from '@/tests/vitest/utils/helper';
+import { assertSafeParseSuccess, assertSafeParseError } from '@/tests/vitest/vitest.helper';
 
 import {
   emailSchema,

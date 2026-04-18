@@ -1,6 +1,6 @@
-import { KEYS, TYPES, type Type, type Result } from "@/results/result.result";
+import { KEYS, TYPES, type Type, type Result } from "@/results/result";
 
-import { type ValuesFromObject } from "@/utils/types/util.type";
+import { type ValuesFromObject } from "@/utils/type";
 
 // result > error
 // error result is a base type(does not create object.)
