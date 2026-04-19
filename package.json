@@ -6,27 +6,25 @@
     "dev--tp": "next dev --turbopack",
     "build--tp": "next build --turbopack",
     "start": "next start",
-
     "eslint": "eslint",
     "eslint--qt": "eslint --quiet",
-
     "i18ncheck": "i18n-check --source en --locales i18n/messages/",
-
     "vitest--cvr": "vitest run --coverage",
-
     "playwright:deps": "npx playwright install --with-deps",
     "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
     "playwright": "playwright test",
     "playwright--ui": "playwright test --ui",
-
+    "scoop:supabase": "scoop update supabase",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:stop--nb": "supabase stop --no-backup",
+    "supabase:type": "supabase gen types typescript --local > libs/supabase/supabase.type.ts",
     "supabase:dbstart": "supabase db start",
     "supabase:lint": "supabase db lint",
     "supabase:test": "supabase db test",
-    "supabase:type": "supabase gen types typescript --local > libs/supabase/supabase.type.ts",
     "supabase:reset": "supabase db reset",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-
+    "supabase:diff": "supabase db diff -f my_schema",
+    "supabase:dump": "supabase db dump --local --data-only > supabase/seed.sql",
     "supabase:link": "supabase link --project-ref $SUPABASE_PROJECT_ID",
     "supabase:push": "supabase db push",
     "supabase:push--dr": "supabase db push --dry-run"
@@ -63,7 +61,7 @@
     "eslint-config-next": "15.5.4",
     "global-jsdom": "^27.0.0",
     "jsdom": "^27.4.0",
-    "supabase": "^2.84.5",
+    "supabase": "^2.92.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
