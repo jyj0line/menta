@@ -2,17 +2,28 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({
-  path: path.resolve(__dirname, '.env.local')
-});
+const CI = process.env.CI;
+const VERCEL_AUTOMATION_BYPASS_SECRET = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+if (CI) {
+  if (!VERCEL_AUTOMATION_BYPASS_SECRET) {
+    throw new Error(
+      'VERCEL_AUTOMATION_BYPASS_SECRET is required to run tests against protected deployments',
+    );
+  }
+} else {
+  dotenv.config({
+    path: path.resolve(__dirname, '.env.local')
+  });
+}
 
 const NEXTJS_ORIGIN = process.env.NEXT_PUBLIC_NEXTJS_ORIGIN;
+const PLAYWRIGHT_TEST_DIR = process.env.PLAYWRIGHT_TEST_DIR;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 const playwrightConfig = defineConfig({
-  testDir: './tests/playwright/tests/',
+  testDir: PLAYWRIGHT_TEST_DIR,
   testMatch: '**/*.spec.{ts,tsx}',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -31,6 +42,12 @@ const playwrightConfig = defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    extraHTTPHeaders: (CI && VERCEL_AUTOMATION_BYPASS_SECRET) ? {
+      'x-vercel-protection-bypass': VERCEL_AUTOMATION_BYPASS_SECRET,
+      // Use 'samesitenone' instead of 'true' when testing in an iframe.
+      'x-vercel-set-bypass-cookie': 'true',
+    } : undefined,
   },
 
   /* Configure projects for major browsers */
@@ -72,12 +89,6 @@ const playwrightConfig = defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: process.env.CI ? undefined : [
-    {
-      command: 'next build && next start',
-      url: NEXTJS_ORIGIN,
-      reuseExistingServer: true
-    }
-  ]
+  // webServer: []
 });
 export default playwrightConfig;
