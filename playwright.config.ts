@@ -3,9 +3,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 const CI = process.env.CI;
+const PALYWRIGHT_LOCAL = process.env.PALYWRIGHT_LOCAL;
 const VERCEL_AUTOMATION_BYPASS_SECRET = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 if (CI) {
-  if (!VERCEL_AUTOMATION_BYPASS_SECRET) {
+  if (!PALYWRIGHT_LOCAL && !VERCEL_AUTOMATION_BYPASS_SECRET) {
     throw new Error(
       'VERCEL_AUTOMATION_BYPASS_SECRET is required to run tests against protected deployments',
     );
