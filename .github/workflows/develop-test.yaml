@@ -1,0 +1,56 @@
+name: Develop Test
+
+on:
+  repository_dispatch:
+    types:
+      - 'vercel.deployment.success'
+  workflow_dispatch:
+
+jobs:
+  # ─────────────────────────────────────────────────────
+  # Job 1: develop e2e test(playwright)
+  # ─────────────────────────────────────────────────────
+  develop-e2e-test:
+    name: develop e2e test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: unit-integration-test
+    if: |
+      (github.event_name == 'repository_dispatch' && github.ref_name == 'develop')
+      || (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
+    environment: menta-develop-nextjs-environment
+    env:
+      NEXT_PUBLIC_NEXTJS_ORIGIN: ${{ secrets.NEXT_PUBLIC_NEXTJS_ORIGIN }}
+      NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE: ${{ secrets.NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE }}
+      NEXT_PUBLIC_SUPABASE_API_PROJECT_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_API_PROJECT_URL }}
+      PLAYWRIGHT_TEST_DIR: ${{ secrets.PLAYWRIGHT_TEST_DIR }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+    steps:
+      # ── Setup CI environment  ──────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+
+      - name: Setup and Cache Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ── E2E Tests (Playwright) ──────────────────────────────────────
+      - name: Install Playwright Browsers
+        run: npm run playwright:deps
+
+      - name: Run Playwright tests
+        run: npm run playwright
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

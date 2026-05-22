@@ -6,15 +6,21 @@
     "dev--tp": "next dev --turbopack",
     "build--tp": "next build --turbopack",
     "start": "next start",
+
     "eslint": "eslint",
     "eslint--qt": "eslint --quiet",
+
     "i18ncheck": "i18n-check --source en --locales i18n/messages/",
+
     "vitest--cvr": "vitest run --coverage",
+
     "playwright:deps": "npx playwright install --with-deps",
     "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
     "playwright": "playwright test",
     "playwright--ui": "playwright test --ui",
+
     "scoop:supabase": "scoop update supabase",
+    
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:stop--nb": "supabase stop --no-backup",
@@ -26,8 +32,7 @@
     "supabase:diff": "supabase db diff -f my_schema",
     "supabase:dump": "supabase db dump --local --data-only > supabase/seed.sql",
     "supabase:link": "supabase link --project-ref $SUPABASE_PROJECT_ID",
-    "supabase:push": "supabase db push",
-    "supabase:push--dr": "supabase db push --dry-run"
+    "supabase:push": "supabase db push"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
