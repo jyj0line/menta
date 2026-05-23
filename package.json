@@ -9,16 +9,21 @@
     "dev--tp": "next dev --turbopack",
     "build--tp": "next build --turbopack",
     "start": "next start",
+
     "eslint": "eslint",
     "eslint--qt": "eslint --quiet",
+
     "i18ncheck": "i18n-check --source en --locales i18n/messages/",
     "vitest": "vitest run",
     "vitest--cvr": "vitest run --coverage",
+
     "playwright:deps": "npx playwright install --with-deps",
     "playwright:wait": "npx wait-on $NEXT_PUBLIC_NEXTJS_ORIGIN",
     "playwright": "playwright test",
     "playwright--ui": "playwright test --ui",
+
     "scoop:supabase": "scoop update supabase",
+    
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:stop--nb": "supabase stop --no-backup",
