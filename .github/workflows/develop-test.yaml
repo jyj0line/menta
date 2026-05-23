@@ -14,13 +14,12 @@ jobs:
     name: develop e2e test
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: unit-integration-test
     if: |
-      (github.event_name == 'repository_dispatch' && github.ref_name == 'develop')
+      (github.event_name == 'repository_dispatch' && github.event.client_payload.git.ref == 'develop')
       || (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
     environment: menta-develop-nextjs-environment
     env:
-      NEXT_PUBLIC_NEXTJS_ORIGIN: ${{ secrets.NEXT_PUBLIC_NEXTJS_ORIGIN }}
+      NEXT_PUBLIC_NEXTJS_ORIGIN: ${{ github.event.client_payload.url }}
       NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE: ${{ secrets.NEXT_PUBLIC_SUPABASE_AK_PUBLISHABLE }}
       NEXT_PUBLIC_SUPABASE_API_PROJECT_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_API_PROJECT_URL }}
       PLAYWRIGHT_TEST_DIR: ${{ secrets.PLAYWRIGHT_TEST_DIR }}
@@ -30,6 +29,8 @@ jobs:
       # ── Setup CI environment  ──────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          ref: ${{ github.event.client_payload.git.sha }}
 
       - name: Setup and Cache Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6

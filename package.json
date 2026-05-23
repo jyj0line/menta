@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "outdated": "npm outdated",
+    "audit": "npm audit",
+    "audit:fix": "npm audit fix",
     "dev--tp": "next dev --turbopack",
     "build--tp": "next build --turbopack",
     "start": "next start",
@@ -11,7 +14,8 @@
     "eslint--qt": "eslint --quiet",
 
     "i18ncheck": "i18n-check --source en --locales i18n/messages/",
-
+    
+    "vitest": "vitest run",
     "vitest--cvr": "vitest run --coverage",
 
     "playwright:deps": "npx playwright install --with-deps",
@@ -29,14 +33,14 @@
     "supabase:lint": "supabase db lint",
     "supabase:test": "supabase db test",
     "supabase:reset": "supabase db reset",
-    "supabase:diff": "supabase db diff -f my_schema",
+    "supabase:diff": "supabase db diff -f supabase/schema",
     "supabase:dump": "supabase db dump --local --data-only > supabase/seed.sql",
     "supabase:link": "supabase link --project-ref $SUPABASE_PROJECT_ID",
     "supabase:push": "supabase db push"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.58.0",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.3",
     "dotenv": "^17.3.1",
     "next": "^16.0.10",
     "next-intl": "^4.8.2",
