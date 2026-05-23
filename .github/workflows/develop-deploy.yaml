@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
 
       - name: supabase setup cli
-      - uses: supabase/setup-cli@df56b21da46c98abb12a9804e4fb1f657773e333 #v2
+        uses: supabase/setup-cli@df56b21da46c98abb12a9804e4fb1f657773e333 #v2
 
       # ── Remote Develop DB Migration ───────────────────────────
       - name: link supabase remote develop project
