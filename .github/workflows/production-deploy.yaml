@@ -18,7 +18,6 @@ jobs:
     name: production supabase migration
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: production-supabase-check
     if: |
       (github.event_name == 'push' && github.ref_name == 'main')
       || (github.event_name == 'workflow_dispatch' && github.ref_name == 'main')
